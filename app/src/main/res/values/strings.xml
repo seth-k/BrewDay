@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Brew Day</string>
+
+    <string name="hello_world">Choose a Brew Tool:</string>
+    <string name="action_settings">Settings</string>
+    <string name="strike_calc_title">Strike Calculator</string>
+    <string name="title_activity_strike_calculator">Strike Calculator</string>
+    <string name="strike_calc_prompt">Enter Grain and Mash info:</string>
+    <string name="strike_calc_grain_weight">Total Grain Weight:</string>
+    <string name="strike_calc_water_ratio">Mash Water/Grain Ratio:</string>
+    <string name="strike_calc_rest_temp">Mash Target Temperarute:</string>
+    <string name="strike_calc_grain_temp">Grain Temperature</string>
+    <string name="strike_calc_strike_volume">Strike Water Volume:</string>
+    <string name="strike_calc_strike_temp">Strike Water Temp:</string>
+    <string name="unit_quart">quarts</string>
+    <string name="unit_gal">gallons</string>
+    <string name="unit_lb">lbs</string>
+    <string name="unit_liter">l</string>
+    <string name="unit_kilograms">kg</string>
+    <string name="unit_deg_f">&#176; F</string>
+    <string name="unit_deg_c">C</string>
+    <string name="unit_qt_per_lb">qts/lb</string>
+    <string name="hop_timer_title">Hop Timer</string>
+</resources>
