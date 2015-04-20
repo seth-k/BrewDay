@@ -8,7 +8,7 @@
     <string name="strike_calc_prompt">Enter Grain and Mash info:</string>
     <string name="strike_calc_grain_weight">Total Grain Weight:</string>
     <string name="strike_calc_water_ratio">Mash Water/Grain Ratio:</string>
-    <string name="strike_calc_rest_temp">Mash Target Temperarute:</string>
+    <string name="strike_calc_rest_temp">Mash Target Temp:</string>
     <string name="strike_calc_grain_temp">Grain Temperature</string>
     <string name="strike_calc_strike_volume">Strike Water Volume:</string>
     <string name="strike_calc_strike_temp">Strike Water Temp:</string>
