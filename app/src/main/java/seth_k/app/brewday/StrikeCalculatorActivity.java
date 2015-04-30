@@ -1,7 +1,10 @@
 package seth_k.app.brewday;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -18,7 +21,8 @@ import static android.widget.TextView.OnEditorActionListener;
 public class StrikeCalculatorActivity extends ActionBarActivity implements OnEditorActionListener {
 
     private static DecimalFormat volFormat = new DecimalFormat("##0.00");
-    private static DecimalFormat tempFormat = new DecimalFormat("##0.0");
+    private static DecimalFormat tempOutFormat = new DecimalFormat("##0.0");
+    private static DecimalFormat tempInFormat = new DecimalFormat("##0");
     private Mash mMash = new Mash();
 
     @Override
@@ -32,12 +36,29 @@ public class StrikeCalculatorActivity extends ActionBarActivity implements OnEdi
         for (int i = 0; i < field_ids.length; i++) {
             EditText tempET = (EditText) findViewById(field_ids[i]);
             tempET.setOnEditorActionListener(this);
-            tempET.setText(Double.toString(field_vals[i]));
+            if (i < 2) {
+                tempET.setText(Double.toString(field_vals[i]));
+            } else {
+                tempET.setText(tempInFormat.format(field_vals[i]));
+            }
         }
 
-        updateCalcAndDisplay();
+        updateDisplay();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // grab relavent settings (could have been changed from settings panel)
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        double tunCorrection = Double.parseDouble(prefs.getString("mash_tun_correction", "0.0"));
+        double infusionTemp = Double.parseDouble(prefs.getString("infusion_water_temp", "212.0"));
+
+        mMash.setMashTunCorrection(tunCorrection);
+        mMash.setInfusionTemp(infusionTemp);
+        updateDisplay();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,7 +76,8 @@ public class StrikeCalculatorActivity extends ActionBarActivity implements OnEdi
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -71,7 +93,7 @@ public class StrikeCalculatorActivity extends ActionBarActivity implements OnEdi
                         mMash.setGrainWeight(input);
                         break;
                     case R.id.water_ratio:
-                        mMash.setWaterRatio(input);
+                        mMash.setInitialWaterRatio(input);
                         break;
                     case R.id.mash_target:
                         mMash.setStrikeTarget(input);
@@ -83,19 +105,19 @@ public class StrikeCalculatorActivity extends ActionBarActivity implements OnEdi
             } catch (NumberFormatException e) { // Ignore empty fields.
             }
 
-            updateCalcAndDisplay();
+            updateDisplay();
         }
         return false;  // Don't consume. Lets 'Next'/'Done' cycle through input fields as intended.
     }
 
-    private void updateCalcAndDisplay() {
-        double strike_volume = mMash.calculateStrikeVolume();
-        double strike_temp = mMash.calculateStrikeTemp();
+    private void updateDisplay() {
+        double strike_volume = mMash.getStrikeVolume();
+        double strike_temp = mMash.getStrikeTemp();
         Resources res = getResources();
 
         ((TextView) findViewById(R.id.sc_result_volume)).setText(volFormat.format(strike_volume)
                 + " " + res.getString(R.string.unit_quart));
-        ((TextView) findViewById(R.id.sc_result_temp)).setText(tempFormat.format(strike_temp)
+        ((TextView) findViewById(R.id.sc_result_temp)).setText(tempOutFormat.format(strike_temp)
                 + res.getString(R.string.unit_deg_f));
     }
 }

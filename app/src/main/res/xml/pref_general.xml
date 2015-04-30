@@ -1,0 +1,35 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:key="mash_tun_correction"
+        android:title="@string/pref_title_mash_tun_correction"
+        android:defaultValue="@string/pref_default_mash_tun_correction"
+        android:selectAllOnFocus="true"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        android:maxLines="1"/>
+
+    <EditTextPreference
+        android:key="infusion_water_temp"
+        android:title="@string/pref_title_infusion_water_temp"
+        android:defaultValue="@string/pref_default_infusion_water_temp"
+        android:selectAllOnFocus="true"
+        android:inputType="numberDecimal"
+        android:singleLine="true"
+        android:maxLines="1"/>
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:key="units_list"
+        android:title="@string/pref_title_units_system"
+        android:defaultValue="1"
+        android:entries="@array/pref_example_units_system"
+        android:entryValues="@array/pref_units_system_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
+
+</PreferenceScreen>

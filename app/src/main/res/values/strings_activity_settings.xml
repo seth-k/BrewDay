@@ -1,0 +1,36 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_mash_tun_correction">Mash tun correction (in degrees)</string>
+    <string name="pref_default_mash_tun_correction">3.0</string>
+
+    <string name="pref_title_infusion_water_temp">Infusion water temperature</string>
+    <string name="pref_default_infusion_water_temp">210</string>
+
+
+    <string name="pref_title_units_system">System of units</string>
+    <string-array name="pref_example_units_system">
+        <item>US/Imperial</item>
+        <item>Metric (not implemented)</item>
+    </string-array>
+    <string-array name="pref_units_system_values">
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_brew_event_notifications">Brew event notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+</resources>
