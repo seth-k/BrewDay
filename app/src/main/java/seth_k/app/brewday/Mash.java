@@ -142,6 +142,12 @@ public class Mash {
         return calculateStepVolume(prev, next);
     }
 
+    private double calculateStepVolume(MashStep prev, MashStep step) {
+        return (step.mTemperature - prev.mTemperature)
+                * (THERMO_CONSTANT_US * mGrainWeight + prev.mTotalWaterVolume)
+                / (mInfusionTemp - step.mTemperature);
+    }
+
     private void updateMashSteps() {
         MashStep prev = null;
         Collections.sort(mSteps);
@@ -155,12 +161,6 @@ public class Mash {
             }
             prev = step;
         }
-    }
-
-    private double calculateStepVolume(MashStep prev, MashStep step) {
-        return (step.mTemperature - prev.mTemperature)
-                * (THERMO_CONSTANT_US * mGrainWeight + prev.mTotalWaterVolume)
-                / (mInfusionTemp - step.mTemperature);
     }
 
     private class MashStep implements Comparable<MashStep> {

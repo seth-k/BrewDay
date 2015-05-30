@@ -50,7 +50,7 @@ public class StrikeCalculatorActivity extends ActionBarActivity implements OnEdi
     protected void onResume() {
         super.onResume();
 
-        // grab relavent settings (could have been changed from settings panel)
+        // grab relevant settings (could have been changed from settings panel)
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         double tunCorrection = Double.parseDouble(prefs.getString("mash_tun_correction", "0.0"));
         double infusionTemp = Double.parseDouble(prefs.getString("infusion_water_temp", "212.0"));

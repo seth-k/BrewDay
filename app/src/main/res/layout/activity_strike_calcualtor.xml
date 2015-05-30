@@ -86,13 +86,13 @@
         android:id="@+id/mash_target"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/water_ratio"
+        android:layout_below="@+id/grain_temp"
         android:layout_gravity="center_vertical"
         android:layout_margin="2dp"
         android:layout_toRightOf="@+id/textView2"
         android:ems="10"
         android:focusable="true"
-        android:imeOptions="actionNext"
+        android:imeOptions="actionDone"
         android:inputType="numberDecimal"
         android:text="154"/>
 
@@ -119,13 +119,13 @@
         android:id="@+id/grain_temp"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/mash_target"
+        android:layout_below="@id/water_ratio"
         android:layout_gravity="center_vertical"
         android:layout_margin="2dp"
         android:layout_toRightOf="@+id/textView2"
         android:ems="10"
         android:focusable="true"
-        android:imeOptions="actionDone"
+        android:imeOptions="actionNext"
         android:inputType="numberDecimal"
         android:text="65"/>
 
@@ -153,7 +153,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/grain_temp"
+        android:layout_below="@+id/mash_target"
         android:layout_marginTop="42dp"
         android:text="@string/strike_calc_strike_volume"
         android:textAppearance="?android:attr/textAppearanceMedium"/>
