@@ -36,6 +36,7 @@
         android:layout_alignStart="@+id/launch_strike_calc"
         android:layout_alignRight="@+id/launch_strike_calc"
         android:layout_alignEnd="@+id/launch_strike_calc"
-        android:text="@string/hop_timer_title"/>
+        android:text="@string/hop_timer_title"
+        android:onClick="launchHopTimer"/>
 
 </RelativeLayout>

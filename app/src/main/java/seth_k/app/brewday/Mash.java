@@ -8,7 +8,7 @@ public class Mash {
     public static final double DEFAULT_SACC_REST_TEMP = 154d;
     public static final int DEFAULT_SACC_REST_LENGTH = 60; // (min)
     // Thermo constants are the ratio of the specific heat of grain to the specific heat of water
-    // divided by the density of water (because water is measured in volume).
+    // divided by the density of water (because water is measured by volume).
     private static final double THERMO_CONSTANT_US = 0.2; // using quarts and pounds (units: qt/lb)
     private static final double THERMO_CONSTANT_SI = 0.41; //using liters and kilograms (units: l/kg)
     public static final double BOILING_POINT_WATER = 212.0;
@@ -150,7 +150,7 @@ public class Mash {
 
     private void updateMashSteps() {
         MashStep prev = null;
-        Collections.sort(mSteps);
+        Collections.sort(mSteps);  // Mash steps ascend in temp, this is a biochemical restriction
         for (MashStep step : mSteps) {
             if (prev == null) {
                 step.mWaterVolumeForStep = calculateStrikeVolume();

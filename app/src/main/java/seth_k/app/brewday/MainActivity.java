@@ -44,4 +44,9 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = new Intent(this, StrikeCalculatorActivity.class);
         startActivity(intent);
     }
+
+    public void launchHopTimer(View view) {
+        Intent intent = new Intent(this, HopTimerActivity.class);
+        startActivity(intent);
+    }
 }

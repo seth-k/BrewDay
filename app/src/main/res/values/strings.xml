@@ -21,4 +21,6 @@
     <string name="unit_deg_c">C</string>
     <string name="unit_qt_per_lb">qts/lb</string>
     <string name="hop_timer_title">Hop Timer</string>
+    <string name="title_activity_hop_timer">Hop Timer</string>
+    <string name="hop_timer_label">Hop/Boil Timer:</string>
 </resources>
