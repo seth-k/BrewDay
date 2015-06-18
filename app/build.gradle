@@ -20,7 +20,9 @@ android {
 }
 
 dependencies {
+    testCompile 'junit:junit:4.12'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:22.1.1'
     compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.jakewharton:butterknife:6.1.0'
 }

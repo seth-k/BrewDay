@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/hops_item_amount"
+        android:textSize="20sp"
+        android:paddingLeft="5dp"
+        tools:text="1.75oz"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/hops_item_name"
+        android:textSize="20sp"
+        android:paddingLeft="5dp"
+        android:layout_weight="1"
+        tools:text="Northern Brewer"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="60 min"
+        android:id="@+id/hops_item_duration"
+        android:textSize="20sp"
+        android:paddingLeft="5dp"/>
+</LinearLayout>

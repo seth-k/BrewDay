@@ -22,7 +22,7 @@
         android:layout_marginTop="27dp"
         tools:text="00:00"
         android:layout_below="@+id/textView3"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -32,5 +32,40 @@
         android:layout_alignLeft="@+id/textView3"
         android:layout_alignStart="@+id/textView3"
         />
+
+    <ImageButton
+        android:id="@+id/add_hops_button"
+        android:layout_width="@dimen/round_button_diameter"
+        android:layout_height="@dimen/round_button_diameter"
+        android:src="@android:drawable/ic_input_add"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/add_button_margin"
+        android:layout_marginRight="@dimen/add_button_margin"
+        android:layout_marginEnd="@dimen/add_button_margin"
+        android:tint="@android:color/white"
+        android:background="@drawable/oval"
+        android:elevation="5dp"
+        android:contentDescription="Add Hops"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_timer_button"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@android:drawable/ic_media_play"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pause_timer_button"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:visibility="invisible"
+        android:src="@android:drawable/ic_media_pause"/>
+
 
 </RelativeLayout>
