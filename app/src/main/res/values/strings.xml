@@ -23,4 +23,7 @@
     <string name="hop_timer_title">Hop Timer</string>
     <string name="title_activity_hop_timer">Hop Timer</string>
     <string name="hop_timer_label">Hop/Boil Timer:</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="boil_time_edit_title">Boil Time (min):</string>
 </resources>

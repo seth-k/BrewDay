@@ -1,16 +1,27 @@
 package seth_k.app.brewday;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Paint;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +31,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 
-public class HopTimerActivity extends ActionBarActivity {
+public class HopTimerActivity extends Activity {
 
     public static final long DEFAULT_BOIL_TIME = 60l;
     public static final long MIN_TO_MILLIS = 60000;
@@ -36,6 +47,7 @@ public class HopTimerActivity extends ActionBarActivity {
     @InjectView(R.id.hops_list) ListView mHopsList;
     @InjectView(R.id.start_timer_button) ImageButton mStartButton;
     @InjectView(R.id.pause_timer_button) ImageButton mPauseButton;
+    @InjectView(R.id.edit_time_button) ImageButton mEditTimeButton;
     @InjectView(R.id.add_hops_button) ImageButton mAddButton;
 
     List<Hops> mHopsToAdd;
@@ -88,18 +100,90 @@ public class HopTimerActivity extends ActionBarActivity {
         isRunning = true;
         mStartButton.setVisibility(View.INVISIBLE);
         mPauseButton.setVisibility(View.VISIBLE);
+        mEditTimeButton.setVisibility(View.INVISIBLE);
     }
 
     @OnClick(R.id.pause_timer_button)
-    public void pauseTimer() {
+    public void pauseTimer(View view) {
         mCountDownTimer.cancel();  //stop the display clock
         mBoilTime = mBoilStopTime - SystemClock.elapsedRealtime(); //find the remaining time
         mBoilStopTime = 0; // reset the ending time to undefined
         isRunning = false;
         mStartButton.setVisibility(View.VISIBLE);
         mPauseButton.setVisibility(View.INVISIBLE);
-
+        mEditTimeButton.setVisibility(View.VISIBLE);
     }
+
+    @OnClick(R.id.edit_time_button)
+    public void editTimer(View view) {
+        // Create pop-up dialog for selecting boil time
+        LayoutInflater inflater = (LayoutInflater)
+                getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View npView = inflater.inflate(R.layout.boil_time_dialog, null);
+        final NumberPicker picker = (NumberPicker) npView;
+        String[] pickerValues = new String[25];
+        for (int i = 0; i < 25; i++) {
+            pickerValues[i] = Integer.toString(i * 10);
+        }
+        picker.setMinValue(0);
+        picker.setMinValue(24);
+        picker.setDisplayedValues(pickerValues);
+        AlertDialog boilTimePicker = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.boil_time_edit_title))
+                .setView(npView)
+                .setPositiveButton(R.string.dialog_ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mBoilTime = picker.getValue() * 10 * MIN_TO_MILLIS;
+                                updateTimerDisplay(mBoilTime);
+
+                            }
+                        })
+                .setNegativeButton(R.string.dialog_cancel,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                updateTimerDisplay(mBoilTime);
+                            }
+                        })
+                .create();
+        picker.setMinValue(0);
+        picker.setMaxValue(24);
+        picker.setValue((int) (mBoilTime / MIN_TO_MILLIS / 10));
+        picker.setDisplayedValues(pickerValues);
+        setNumberPickerTextColor(picker, getResources().getColor(R.color.primary_text_default_material_light));
+        boilTimePicker.show();
+    }
+
+
+    public static boolean setNumberPickerTextColor(NumberPicker numberPicker, int color)
+    {
+        final int count = numberPicker.getChildCount();
+        for(int i = 0; i < count; i++){
+            View child = numberPicker.getChildAt(i);
+            if(child instanceof EditText){
+                try{
+                    Field selectorWheelPaintField = numberPicker.getClass()
+                            .getDeclaredField("mSelectorWheelPaint");
+                    selectorWheelPaintField.setAccessible(true);
+                    ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(color);
+                    ((EditText)child).setTextColor(color);
+                    numberPicker.invalidate();
+                    return true;
+                }
+                catch(NoSuchFieldException e){
+                    Log.w("setNumberPickerTxtColor", e);
+                }
+                catch(IllegalAccessException e){
+                    Log.w("setNumberPickerTxtColor", e);
+                }
+                catch(IllegalArgumentException e){
+                    Log.w("setNumberPickerTxtColor", e);
+                }
+            }
+        }
+        return false;
+    }
+
 
     private void updateTimerDisplay(long millis) {
         long mins = millis / MIN_TO_MILLIS;
