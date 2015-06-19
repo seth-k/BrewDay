@@ -2,10 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
-        <item name="android:textColorPrimary">#000055</item>
+
     </style>
 
-    <style name="AlertDialogCustom" parent="@android:style/Theme.Dialog">
-        <item name="android:textColorPrimary">#000055</item>
-    </style>
 </resources>

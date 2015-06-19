@@ -61,6 +61,7 @@ public class HopTimerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hop_timer);
         ButterKnife.inject(this);
+
         mHopsToAdd = new ArrayList<>();
 
         if (DEBUG_HOPS_LIST > 0) {
@@ -117,9 +118,8 @@ public class HopTimerActivity extends Activity {
     @OnClick(R.id.edit_time_button)
     public void editTimer(View view) {
         // Create pop-up dialog for selecting boil time
-        LayoutInflater inflater = (LayoutInflater)
-                getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View npView = inflater.inflate(R.layout.boil_time_dialog, null);
+
+        View npView = getLayoutInflater().inflate(R.layout.boil_time_dialog, null);
         final NumberPicker picker = (NumberPicker) npView;
         String[] pickerValues = new String[25];
         for (int i = 0; i < 25; i++) {
@@ -150,40 +150,8 @@ public class HopTimerActivity extends Activity {
         picker.setMaxValue(24);
         picker.setValue((int) (mBoilTime / MIN_TO_MILLIS / 10));
         picker.setDisplayedValues(pickerValues);
-        setNumberPickerTextColor(picker, getResources().getColor(R.color.primary_text_default_material_light));
         boilTimePicker.show();
     }
-
-
-    public static boolean setNumberPickerTextColor(NumberPicker numberPicker, int color)
-    {
-        final int count = numberPicker.getChildCount();
-        for(int i = 0; i < count; i++){
-            View child = numberPicker.getChildAt(i);
-            if(child instanceof EditText){
-                try{
-                    Field selectorWheelPaintField = numberPicker.getClass()
-                            .getDeclaredField("mSelectorWheelPaint");
-                    selectorWheelPaintField.setAccessible(true);
-                    ((Paint)selectorWheelPaintField.get(numberPicker)).setColor(color);
-                    ((EditText)child).setTextColor(color);
-                    numberPicker.invalidate();
-                    return true;
-                }
-                catch(NoSuchFieldException e){
-                    Log.w("setNumberPickerTxtColor", e);
-                }
-                catch(IllegalAccessException e){
-                    Log.w("setNumberPickerTxtColor", e);
-                }
-                catch(IllegalArgumentException e){
-                    Log.w("setNumberPickerTxtColor", e);
-                }
-            }
-        }
-        return false;
-    }
-
 
     private void updateTimerDisplay(long millis) {
         long mins = millis / MIN_TO_MILLIS;
