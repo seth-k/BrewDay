@@ -37,7 +37,7 @@
         android:id="@+id/add_hops_button"
         android:layout_width="@dimen/round_button_diameter"
         android:layout_height="@dimen/round_button_diameter"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_add_white_48dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="@dimen/add_button_margin"
@@ -48,16 +48,16 @@
         android:elevation="5dp"
         android:contentDescription="Add Hops"/>
 
-    <ImageButton
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/start_timer_button"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:src="@android:drawable/ic_media_play"/>
+        android:src="@drawable/ic_play_arrow_black_48dp"/>
 
-    <ImageButton
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/pause_timer_button"
@@ -65,16 +65,17 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:visibility="invisible"
-        android:src="@android:drawable/ic_media_pause"/>
+        android:src="@drawable/ic_pause_black_48dp"/>
 
-    <ImageButton
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/edit_time_button"
         android:layout_toRightOf="@+id/chronometer"
         android:layout_toEndOf="@+id/chronometer"
-        android:src="@android:drawable/ic_menu_edit"
+        android:src="@drawable/ic_mode_edit_black_24dp"
         android:scaleType="fitXY"
-        android:layout_alignBottom="@+id/chronometer"/>
+        android:layout_alignTop="@+id/chronometer"
+        android:layout_marginTop="35dp"/>
 
 </RelativeLayout>

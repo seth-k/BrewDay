@@ -1,27 +1,24 @@
 package seth_k.app.brewday;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.content.Context;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
-import android.graphics.Paint;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,21 +30,24 @@ import butterknife.OnClick;
 
 public class HopTimerActivity extends Activity {
 
-    public static final long DEFAULT_BOIL_TIME = 60l;
+    public static final String TAG = HopTimerActivity.class.getSimpleName();
+
+    public static final long DEFAULT_BOIL_TIME = 10l;
     public static final long MIN_TO_MILLIS = 60000;
     public static final long SEC_TO_MLLIS = 1000;
 
     public static final String BOIL_TIME_KEY = "boil_time";
     public static final String BOIL_END_KEY = "boil_end";
     public static final String IS_RUNNING_KEY = "is_running";
+    public static final String HOPS_TO_ADD_EXTRA = "HOPS_TO_ADD";
 
     public static final int DEBUG_HOPS_LIST = 1;
 
     @InjectView(R.id.chronometer) TextView mTimer;
     @InjectView(R.id.hops_list) ListView mHopsList;
-    @InjectView(R.id.start_timer_button) ImageButton mStartButton;
-    @InjectView(R.id.pause_timer_button) ImageButton mPauseButton;
-    @InjectView(R.id.edit_time_button) ImageButton mEditTimeButton;
+    @InjectView(R.id.start_timer_button) ImageView mStartButton;
+    @InjectView(R.id.pause_timer_button) ImageView mPauseButton;
+    @InjectView(R.id.edit_time_button) ImageView mEditTimeButton;
     @InjectView(R.id.add_hops_button) ImageButton mAddButton;
 
     List<Hops> mHopsToAdd;
@@ -55,19 +55,22 @@ public class HopTimerActivity extends Activity {
     private long mBoilStopTime; // Time of end of boil in system clock time
     private boolean isRunning;
     private CountDownTimer mCountDownTimer;
+    private AlarmManager mAlarmManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hop_timer);
         ButterKnife.inject(this);
+        mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
 
         mHopsToAdd = new ArrayList<>();
 
         if (DEBUG_HOPS_LIST > 0) {
-            Hops hop1 = new Hops("Northern Brewer", 1.5, 60);
-            Hops hop2 = new Hops("Cascade", 1.0, 15);
-            Hops hop3 = new Hops("Tettnanger", .75, 5);
+            Hops hop1 = new Hops("Northern Brewer", 1.5, 9);
+            Hops hop2 = new Hops("Cascade", 1.0, 8);
+            Hops hop3 = new Hops("Tettnanger", .75, 7);
 
             mHopsToAdd.add(hop1);
             mHopsToAdd.add(hop2);
@@ -94,14 +97,35 @@ public class HopTimerActivity extends Activity {
 
     @OnClick(R.id.start_timer_button)
     public void startTimer(View view) {
-        if (mBoilStopTime == 0) {
-            mBoilStopTime = SystemClock.elapsedRealtime() + mBoilTime;
+        long realtime = SystemClock.elapsedRealtime(); //get current time
+        if (mBoilStopTime == 0) {  // Check to see if it is already set .ie the timer is only
+            // Starting if activity is recreated.
+            mBoilStopTime = realtime + mBoilTime;
+
+            // add notifications for each hops addition and boil end
+            int requestCode = 0;
+            for (Hops hop : mHopsToAdd) {
+                long atMillis = mBoilStopTime - hop.getBoilTime() * MIN_TO_MILLIS;
+                String message = hop.toString();
+                setAlarm(requestCode++, atMillis, message);
+                Log.d(TAG, "Adding alarm for: " + message);
+            }
+            setAlarm(requestCode, mBoilStopTime, "End of Boil. Please turn burner off.");
         }
         startTimerDisplay();
         isRunning = true;
         mStartButton.setVisibility(View.INVISIBLE);
         mPauseButton.setVisibility(View.VISIBLE);
         mEditTimeButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void setAlarm(int requestCode, long atMillis, String message) {
+        Intent alarmIntent = new Intent(this, HopAlarmReceiver.class);
+        alarmIntent.putExtra(HOPS_TO_ADD_EXTRA, message);
+        PendingIntent pending = PendingIntent.getBroadcast(this, requestCode,
+                alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                atMillis, pending);
     }
 
     @OnClick(R.id.pause_timer_button)
@@ -113,6 +137,20 @@ public class HopTimerActivity extends Activity {
         mStartButton.setVisibility(View.VISIBLE);
         mPauseButton.setVisibility(View.INVISIBLE);
         mEditTimeButton.setVisibility(View.VISIBLE);
+
+        // Cancel all notifications for each hops addition and boil end
+        int requestCode = 0;
+        for (Hops hop : mHopsToAdd) {
+            cancelAlarm(requestCode++);
+        }
+        cancelAlarm(requestCode);
+    }
+
+    private void cancelAlarm(int requestCode) {
+        Intent alarmIntent = new Intent(this, HopAlarmReceiver.class);
+        PendingIntent pending = PendingIntent.getBroadcast(this, requestCode,
+                alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        mAlarmManager.cancel(pending);
     }
 
     @OnClick(R.id.edit_time_button)
@@ -201,7 +239,8 @@ public class HopTimerActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
