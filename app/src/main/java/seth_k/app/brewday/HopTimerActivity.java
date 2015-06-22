@@ -220,7 +220,14 @@ public class HopTimerActivity extends Activity {
         outState.putLong(BOIL_TIME_KEY, mBoilTime);
         outState.putLong(BOIL_END_KEY, mBoilStopTime);
         outState.putBoolean(IS_RUNNING_KEY, isRunning);
+    }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mBoilTime = savedInstanceState.getLong(BOIL_TIME_KEY, DEFAULT_BOIL_TIME * MIN_TO_MILLIS);
+        mBoilStopTime = savedInstanceState.getLong(BOIL_END_KEY, 0);
+        isRunning = savedInstanceState.getBoolean(IS_RUNNING_KEY, false);
     }
 
     @Override

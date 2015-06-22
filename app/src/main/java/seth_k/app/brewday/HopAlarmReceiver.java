@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
@@ -14,7 +15,7 @@ public class HopAlarmReceiver extends BroadcastReceiver {
     public static final String TAG = HopAlarmReceiver.class.getSimpleName();
 
     protected NotificationCompat.Builder notice;
-    protected NotificationManager manager;
+    protected NotificationManagerCompat manager;
 
     public HopAlarmReceiver() {
     }
@@ -38,7 +39,7 @@ public class HopAlarmReceiver extends BroadcastReceiver {
         PendingIntent pendingOpenTimer = ts.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         notice.setContentIntent(pendingOpenTimer);
 
-        manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager = NotificationManagerCompat.from(context);
         manager.notify(0, notice.build());
     }
 }
