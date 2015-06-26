@@ -34,7 +34,7 @@ public class HopTimerActivity extends Activity {
 
     public static final long DEFAULT_BOIL_TIME = 10l;
     public static final long MIN_TO_MILLIS = 60000;
-    public static final long SEC_TO_MLLIS = 1000;
+    public static final long SEC_TO_MILLIS = 1000;
 
     public static final String BOIL_TIME_KEY = "boil_time";
     public static final String BOIL_END_KEY = "boil_end";
@@ -193,7 +193,7 @@ public class HopTimerActivity extends Activity {
 
     private void updateTimerDisplay(long millis) {
         long mins = millis / MIN_TO_MILLIS;
-        long secs = (millis % MIN_TO_MILLIS) / SEC_TO_MLLIS;
+        long secs = (millis % MIN_TO_MILLIS) / SEC_TO_MILLIS;
         DecimalFormat f = new DecimalFormat("00");
         mTimer.setText(f.format(mins) + ":" + f.format(secs));
     }
@@ -201,7 +201,7 @@ public class HopTimerActivity extends Activity {
     private void startTimerDisplay() {
         long interval = mBoilStopTime - SystemClock.elapsedRealtime();
 
-        mCountDownTimer= new CountDownTimer(interval, SEC_TO_MLLIS) {
+        mCountDownTimer= new CountDownTimer(interval, SEC_TO_MILLIS) {
             @Override
             public void onTick(long l) {
                 updateTimerDisplay(l);
@@ -223,7 +223,7 @@ public class HopTimerActivity extends Activity {
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mBoilTime = savedInstanceState.getLong(BOIL_TIME_KEY, DEFAULT_BOIL_TIME * MIN_TO_MILLIS);
         mBoilStopTime = savedInstanceState.getLong(BOIL_END_KEY, 0);

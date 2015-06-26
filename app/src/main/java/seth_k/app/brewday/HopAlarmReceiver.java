@@ -1,11 +1,12 @@
 package seth_k.app.brewday;
 
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -16,30 +17,45 @@ public class HopAlarmReceiver extends BroadcastReceiver {
 
     protected NotificationCompat.Builder notice;
     protected NotificationManagerCompat manager;
+    protected long[] vibrator = { 200, 300, 200, 300 };
 
     public HopAlarmReceiver() {
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "Received notice for: " + intent.getStringExtra(HopTimerActivity.HOPS_TO_ADD_EXTRA));
-        notice = new NotificationCompat.Builder(context);
-        notice.setSmallIcon(R.drawable.ic_notify)
-                .setContentTitle("Brewing alert")
-                .setContentText(intent.getStringExtra(HopTimerActivity.HOPS_TO_ADD_EXTRA))
-                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                .setAutoCancel(true);
-        Intent openTimer = new Intent(context, HopTimerActivity.class);
-        openTimer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        String message = intent.getStringExtra(HopTimerActivity.HOPS_TO_ADD_EXTRA);
+        Log.d(TAG, "Received notice for: " + message);
+        SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(context);
 
-        TaskStackBuilder ts = TaskStackBuilder.create(context);
-        ts.addParentStack(HopTimerActivity.class);
-        ts.addNextIntent(openTimer);
+        if (preference.getBoolean("notifications_brew_event", true)) {
+            boolean vibrate = preference.getBoolean("notifications_event_vibrate", true);
+            // Get preferred ringtone
+            String strRingtonePreference = preference.getString("notifications_event_ringtone", "DEFAULT_SOUND");
+            Uri ringtone = Uri.parse(strRingtonePreference);
 
-        PendingIntent pendingOpenTimer = ts.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-        notice.setContentIntent(pendingOpenTimer);
+            notice = new NotificationCompat.Builder(context);
+            notice.setSmallIcon(R.drawable.ic_notify)
+                    .setContentTitle("Brewing alert")
+                    .setContentText(message)
+                    .setTicker(message)
+                    .setSound(ringtone)
+                    .setAutoCancel(true);
+            if (vibrate) {
+                notice.setVibrate(vibrator);
+            }
+            Intent openTimer = new Intent(context, HopTimerActivity.class);
+            openTimer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        manager = NotificationManagerCompat.from(context);
-        manager.notify(0, notice.build());
+            TaskStackBuilder ts = TaskStackBuilder.create(context);
+            ts.addParentStack(HopTimerActivity.class);
+            ts.addNextIntent(openTimer);
+
+            PendingIntent pendingOpenTimer = ts.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            notice.setContentIntent(pendingOpenTimer);
+
+            manager = NotificationManagerCompat.from(context);
+            manager.notify(0, notice.build());
+        }
     }
 }

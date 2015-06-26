@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
 
     public void launchHopTimer(View view) {
         Intent intent = new Intent(this, HopTimerActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
     }
 }
