@@ -1,5 +1,6 @@
 package seth_k.app.brewday;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -18,7 +19,7 @@ import java.text.DecimalFormat;
 import static android.widget.TextView.OnEditorActionListener;
 
 
-public class StrikeCalculatorActivity extends ActionBarActivity implements OnEditorActionListener {
+public class StrikeCalculatorActivity extends Activity implements OnEditorActionListener {
 
     private static DecimalFormat volFormat = new DecimalFormat("##0.00");
     private static DecimalFormat tempOutFormat = new DecimalFormat("##0.0");

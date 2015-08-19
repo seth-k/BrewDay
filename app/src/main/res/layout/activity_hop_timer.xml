@@ -46,7 +46,8 @@
         android:tint="@android:color/white"
         android:background="@drawable/oval"
         android:elevation="5dp"
-        android:contentDescription="Add Hops"/>
+        android:contentDescription="Add Hops"
+        android:visibility="visible"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -77,5 +78,16 @@
         android:scaleType="fitXY"
         android:layout_alignTop="@+id/chronometer"
         android:layout_marginTop="35dp"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/edit_fragment"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        tools:layout="@layout/fragment_edit_hops"
+        android:background="@android:color/transparent"
+        android:visibility="invisible"
+        android:elevation="6dp"/>
 
 </RelativeLayout>

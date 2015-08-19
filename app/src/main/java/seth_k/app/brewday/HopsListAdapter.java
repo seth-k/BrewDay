@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -57,6 +59,19 @@ public class HopsListAdapter extends BaseAdapter {
         holder.mDuration.setText(hops.getBoilTime() + " min");
 
         return view;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        Collections.sort(mHops, new Comparator<Hops>() {
+            @Override
+            public int compare(Hops hops1, Hops hops2) {
+                long time1 = hops1.getBoilTime();
+                long time2 = hops2.getBoilTime();
+                return (int) (time2 - time1);
+            }
+        });
+        super.notifyDataSetChanged();
     }
 
     static class ViewHolder {

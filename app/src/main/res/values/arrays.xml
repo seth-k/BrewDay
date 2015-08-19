@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="select_hops_array">
+        <item>Ahtanum</item>
+        <item>Amarillo</item>
+        <item>Cascade</item>
+        <item>Centennial</item>
+        <item>Chinook</item>
+        <item>Columbus</item>
+        <item>Cluster</item>
+        <item>Crystal</item>
+        <item>Fuggle</item>
+        <item>Galena</item>
+        <item>Golding</item>
+        <item>Hallertau</item>
+        <item>Horizon</item>
+        <item>Liberty</item>
+        <item>Magnum</item>
+        <item>Mount Hood</item>
+        <item>Northern Brewer</item>
+        <item>Nugget</item>
+        <item>Perle</item>
+        <item>Saaz</item>
+        <item>Satus</item>
+        <item>Simcoe</item>
+        <item>Spalt Select</item>
+        <item>Sterling</item>
+        <item>Tettnang</item>
+        <item>Tomahawk</item>
+        <item>Ultra</item>
+        <item>US Fuggle</item>
+        <item>Vanguard</item>
+        <item>Warrior</item>
+        <item>Willamette</item>
+    </string-array>
+</resources>

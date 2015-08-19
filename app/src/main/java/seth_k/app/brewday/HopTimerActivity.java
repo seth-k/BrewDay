@@ -3,6 +3,8 @@ package seth_k.app.brewday;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +15,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,7 +32,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 
-public class HopTimerActivity extends Activity {
+public class HopTimerActivity extends Activity implements EditHopsFragment.OnHopsEditListener {
 
     public static final String TAG = HopTimerActivity.class.getSimpleName();
 
@@ -41,7 +45,7 @@ public class HopTimerActivity extends Activity {
     public static final String IS_RUNNING_KEY = "is_running";
     public static final String HOPS_TO_ADD_EXTRA = "HOPS_TO_ADD";
 
-    public static final int DEBUG_HOPS_LIST = 1;
+    public static final boolean DEBUG_HOPS_LIST = false;
 
     @InjectView(R.id.chronometer) TextView mTimer;
     @InjectView(R.id.hops_list) ListView mHopsList;
@@ -49,6 +53,7 @@ public class HopTimerActivity extends Activity {
     @InjectView(R.id.pause_timer_button) ImageView mPauseButton;
     @InjectView(R.id.edit_time_button) ImageView mEditTimeButton;
     @InjectView(R.id.add_hops_button) ImageButton mAddButton;
+    @InjectView(R.id.edit_fragment) FrameLayout mEditFragmentFrame;
 
     List<Hops> mHopsToAdd;
     private long mBoilTime; // Time to end of boil in millisec from start or last pause
@@ -64,10 +69,9 @@ public class HopTimerActivity extends Activity {
         ButterKnife.inject(this);
         mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-
         mHopsToAdd = new ArrayList<>();
 
-        if (DEBUG_HOPS_LIST > 0) {
+        if (DEBUG_HOPS_LIST) {
             Hops hop1 = new Hops("Northern Brewer", 1.5, 9);
             Hops hop2 = new Hops("Cascade", 1.0, 8);
             Hops hop3 = new Hops("Tettnanger", .75, 7);
@@ -78,6 +82,25 @@ public class HopTimerActivity extends Activity {
         }
         HopsListAdapter adapter = new HopsListAdapter(this, mHopsToAdd);
         mHopsList.setAdapter(adapter);
+
+        // Edit the hops item on long click
+        mHopsList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mEditFragmentFrame.setVisibility(View.VISIBLE);
+                FragmentManager fm = getFragmentManager();
+                EditHopsFragment fragment = EditHopsFragment.newInstance(
+                        mHopsToAdd.get(i),
+                        i,
+                        EditHopsFragment.MODE_EDIT);
+                fm.beginTransaction()
+                        .add(R.id.edit_fragment, fragment)
+                        .addToBackStack(null)
+                        .commit();
+                return true;
+            }
+        });
+
 
         if (savedInstanceState != null) {
             mBoilTime = savedInstanceState.getLong(BOIL_TIME_KEY, DEFAULT_BOIL_TIME * MIN_TO_MILLIS);
@@ -93,7 +116,29 @@ public class HopTimerActivity extends Activity {
         if (isRunning) {
             startTimerDisplay();
         }
+
+
     }
+
+    @OnClick(R.id.add_hops_button)
+    public void addHops(View view) {
+        mEditFragmentFrame.setVisibility(View.VISIBLE);
+        FragmentManager fm = getFragmentManager();
+        EditHopsFragment fragment = EditHopsFragment.newInstance(
+                new Hops("Cascade", 0.0, 60), 0,
+                EditHopsFragment.MODE_ADD);
+        fm.beginTransaction()
+                .add(R.id.edit_fragment, fragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void closeEditFragment() {
+        FragmentManager fm = getFragmentManager();
+        fm.popBackStack();
+        mEditFragmentFrame.setVisibility(View.INVISIBLE);
+    }
+
 
     @OnClick(R.id.start_timer_button)
     public void startTimer(View view) {
@@ -163,9 +208,6 @@ public class HopTimerActivity extends Activity {
         for (int i = 0; i < 25; i++) {
             pickerValues[i] = Integer.toString(i * 10);
         }
-        picker.setMinValue(0);
-        picker.setMinValue(24);
-        picker.setDisplayedValues(pickerValues);
         AlertDialog boilTimePicker = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.boil_time_edit_title))
                 .setView(npView)
@@ -251,5 +293,31 @@ public class HopTimerActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAddHops(Hops hops) {
+        mHopsToAdd.add(hops);
+        ((HopsListAdapter) mHopsList.getAdapter()).notifyDataSetChanged();
+        closeEditFragment();
+    }
+
+    @Override
+    public void onEditHops(Hops hops, int pos) {
+        mHopsToAdd.set(pos, hops);
+        ((HopsListAdapter) mHopsList.getAdapter()).notifyDataSetChanged();
+        closeEditFragment();
+    }
+
+    @Override
+    public void onDeleteHops(Hops hops, int pos) {
+        mHopsToAdd.remove(pos);
+        ((HopsListAdapter) mHopsList.getAdapter()).notifyDataSetChanged();
+        closeEditFragment();
+    }
+
+    @Override
+    public void onCancelEdit() {
+        closeEditFragment();
     }
 }
