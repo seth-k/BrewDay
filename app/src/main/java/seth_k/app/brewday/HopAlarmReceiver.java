@@ -24,7 +24,8 @@ public class HopAlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String message = intent.getStringExtra(HopTimerActivity.HOPS_TO_ADD_EXTRA);
+        String message = intent.getStringExtra(HopTimer.HOPS_TO_ADD_EXTRA);
+        int alarmId = intent.getIntExtra(HopTimer.ALARM_ID_EXTRA, 0);
         Log.d(TAG, "Received notice for: " + message);
         SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -39,6 +40,7 @@ public class HopAlarmReceiver extends BroadcastReceiver {
                     .setContentTitle("Brewing alert")
                     .setContentText(message)
                     .setTicker(message)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                     .setSound(ringtone)
                     .setAutoCancel(true);
             if (vibrate) {
@@ -51,11 +53,11 @@ public class HopAlarmReceiver extends BroadcastReceiver {
             ts.addParentStack(HopTimerActivity.class);
             ts.addNextIntent(openTimer);
 
-            PendingIntent pendingOpenTimer = ts.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingOpenTimer = ts.getPendingIntent(alarmId, PendingIntent.FLAG_UPDATE_CURRENT);
             notice.setContentIntent(pendingOpenTimer);
 
             manager = NotificationManagerCompat.from(context);
-            manager.notify(0, notice.build());
+            manager.notify(alarmId, notice.build());
         }
     }
 }

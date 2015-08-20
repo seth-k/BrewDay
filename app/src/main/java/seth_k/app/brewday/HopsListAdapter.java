@@ -21,10 +21,12 @@ public class HopsListAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<Hops> mHops;
+    private HopTimer mHopTimer;
 
-    public HopsListAdapter(Context context, List<Hops> hops) {
+    public HopsListAdapter(Context context, List<Hops> hops, HopTimer timer) {
         mContext = context;
         mHops = hops;
+        mHopTimer = timer;
     }
 
     @Override
@@ -63,6 +65,7 @@ public class HopsListAdapter extends BaseAdapter {
 
     @Override
     public void notifyDataSetChanged() {
+        // Sort the list in descending order.
         Collections.sort(mHops, new Comparator<Hops>() {
             @Override
             public int compare(Hops hops1, Hops hops2) {
@@ -71,6 +74,8 @@ public class HopsListAdapter extends BaseAdapter {
                 return (int) (time2 - time1);
             }
         });
+        //Update the alarm notifications if the timer is running
+        mHopTimer.resetAlarmNotifications();
         super.notifyDataSetChanged();
     }
 

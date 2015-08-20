@@ -3,21 +3,17 @@ package seth_k.app.brewday;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.NumberPicker;
@@ -36,57 +32,67 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
 
     public static final String TAG = HopTimerActivity.class.getSimpleName();
 
-    public static final long DEFAULT_BOIL_TIME = 10l;
+    public static final long DEFAULT_BOIL_TIME = 60l;
     public static final long MIN_TO_MILLIS = 60000;
     public static final long SEC_TO_MILLIS = 1000;
 
-    public static final String BOIL_TIME_KEY = "boil_time";
-    public static final String BOIL_END_KEY = "boil_end";
-    public static final String IS_RUNNING_KEY = "is_running";
-    public static final String HOPS_TO_ADD_EXTRA = "HOPS_TO_ADD";
+    private static final String HOPS_LIST = "HOPS_LIST";
+    public static final boolean DEBUG_HOPS_LIST = true;
 
-    public static final boolean DEBUG_HOPS_LIST = false;
-
-    @InjectView(R.id.chronometer) TextView mTimer;
-    @InjectView(R.id.hops_list) ListView mHopsList;
+    @InjectView(R.id.chronometer) TextView mTimerView;
+    @InjectView(R.id.hops_list) ListView mHopsListView;
     @InjectView(R.id.start_timer_button) ImageView mStartButton;
     @InjectView(R.id.pause_timer_button) ImageView mPauseButton;
     @InjectView(R.id.edit_time_button) ImageView mEditTimeButton;
-    @InjectView(R.id.add_hops_button) ImageButton mAddButton;
     @InjectView(R.id.edit_fragment) FrameLayout mEditFragmentFrame;
 
     List<Hops> mHopsToAdd;
-    private long mBoilTime; // Time to end of boil in millisec from start or last pause
-    private long mBoilStopTime; // Time of end of boil in system clock time
-    private boolean isRunning;
+    private HopTimer mHopTimer;
     private CountDownTimer mCountDownTimer;
-    private AlarmManager mAlarmManager;
+
+    public List<Hops> getHopsToAdd() {
+        return mHopsToAdd;
+    }
+
+    public void setHopsToAdd(List<Hops> hopsToAdd) {
+        mHopsToAdd = hopsToAdd;
+    }
+
+    public HopTimer getHopTimer() {
+        return mHopTimer;
+    }
+
+    public void setHopTimer(HopTimer hopTimer) {
+        mHopTimer = hopTimer;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hop_timer);
         ButterKnife.inject(this);
-        mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         mHopsToAdd = new ArrayList<>();
+        mHopTimer = new HopTimer(this, mHopsToAdd);
 
         if (DEBUG_HOPS_LIST) {
             Hops hop1 = new Hops("Northern Brewer", 1.5, 9);
-            Hops hop2 = new Hops("Cascade", 1.0, 8);
+            Hops hop2 = new Hops("Cascade", 1.0, 9);
             Hops hop3 = new Hops("Tettnanger", .75, 7);
 
             mHopsToAdd.add(hop1);
             mHopsToAdd.add(hop2);
             mHopsToAdd.add(hop3);
         }
-        HopsListAdapter adapter = new HopsListAdapter(this, mHopsToAdd);
-        mHopsList.setAdapter(adapter);
+
+        HopsListAdapter adapter = new HopsListAdapter(this, mHopsToAdd, mHopTimer);
+        mHopsListView.setAdapter(adapter);
 
         // Edit the hops item on long click
-        mHopsList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        mHopsListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 mEditFragmentFrame.setVisibility(View.VISIBLE);
                 FragmentManager fm = getFragmentManager();
                 EditHopsFragment fragment = EditHopsFragment.newInstance(
@@ -101,23 +107,16 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
             }
         });
 
-
         if (savedInstanceState != null) {
-            mBoilTime = savedInstanceState.getLong(BOIL_TIME_KEY, DEFAULT_BOIL_TIME * MIN_TO_MILLIS);
-            mBoilStopTime = savedInstanceState.getLong(BOIL_END_KEY, 0);
-            isRunning = savedInstanceState.getBoolean(IS_RUNNING_KEY, false);
+            onRestoreInstanceState(savedInstanceState);
         } else {
-            mBoilTime = DEFAULT_BOIL_TIME * MIN_TO_MILLIS;
-            mBoilStopTime = 0;
-            isRunning = false;
+            mHopTimer.loadFromSavedPrefs();
         }
 
-        updateTimerDisplay(mBoilTime);
-        if (isRunning) {
+        updateTimerDisplay(mHopTimer.getBoilTime());
+        if (mHopTimer.isRunning()) {
             startTimerDisplay();
         }
-
-
     }
 
     @OnClick(R.id.add_hops_button)
@@ -134,6 +133,8 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     }
 
     public void closeEditFragment() {
+        // update the hops list and remove the edit fragment
+        ((HopsListAdapter) mHopsListView.getAdapter()).notifyDataSetChanged();
         FragmentManager fm = getFragmentManager();
         fm.popBackStack();
         mEditFragmentFrame.setVisibility(View.INVISIBLE);
@@ -142,60 +143,22 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
 
     @OnClick(R.id.start_timer_button)
     public void startTimer(View view) {
-        long realtime = SystemClock.elapsedRealtime(); //get current time
-        if (mBoilStopTime == 0) {  // Check to see if it is already set .ie the timer is only
-            // Starting if activity is recreated.
-            mBoilStopTime = realtime + mBoilTime;
+        mHopTimer.start();
 
-            // add notifications for each hops addition and boil end
-            int requestCode = 0;
-            for (Hops hop : mHopsToAdd) {
-                long atMillis = mBoilStopTime - hop.getBoilTime() * MIN_TO_MILLIS;
-                String message = hop.toString();
-                setAlarm(requestCode++, atMillis, message);
-                Log.d(TAG, "Adding alarm for: " + message);
-            }
-            setAlarm(requestCode, mBoilStopTime, "End of Boil. Please turn burner off.");
-        }
         startTimerDisplay();
-        isRunning = true;
         mStartButton.setVisibility(View.INVISIBLE);
         mPauseButton.setVisibility(View.VISIBLE);
         mEditTimeButton.setVisibility(View.INVISIBLE);
     }
 
-    private void setAlarm(int requestCode, long atMillis, String message) {
-        Intent alarmIntent = new Intent(this, HopAlarmReceiver.class);
-        alarmIntent.putExtra(HOPS_TO_ADD_EXTRA, message);
-        PendingIntent pending = PendingIntent.getBroadcast(this, requestCode,
-                alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                atMillis, pending);
-    }
-
     @OnClick(R.id.pause_timer_button)
     public void pauseTimer(View view) {
         mCountDownTimer.cancel();  //stop the display clock
-        mBoilTime = mBoilStopTime - SystemClock.elapsedRealtime(); //find the remaining time
-        mBoilStopTime = 0; // reset the ending time to undefined
-        isRunning = false;
         mStartButton.setVisibility(View.VISIBLE);
         mPauseButton.setVisibility(View.INVISIBLE);
         mEditTimeButton.setVisibility(View.VISIBLE);
 
-        // Cancel all notifications for each hops addition and boil end
-        int requestCode = 0;
-        for (Hops hop : mHopsToAdd) {
-            cancelAlarm(requestCode++);
-        }
-        cancelAlarm(requestCode);
-    }
-
-    private void cancelAlarm(int requestCode) {
-        Intent alarmIntent = new Intent(this, HopAlarmReceiver.class);
-        PendingIntent pending = PendingIntent.getBroadcast(this, requestCode,
-                alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        mAlarmManager.cancel(pending);
+        mHopTimer.pause();
     }
 
     @OnClick(R.id.edit_time_button)
@@ -214,21 +177,21 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
                 .setPositiveButton(R.string.dialog_ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                mBoilTime = picker.getValue() * 10 * MIN_TO_MILLIS;
-                                updateTimerDisplay(mBoilTime);
+                                mHopTimer.setBoilTime(picker.getValue() * 10 * MIN_TO_MILLIS);
+                                updateTimerDisplay(mHopTimer.getBoilTime());
 
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                updateTimerDisplay(mBoilTime);
+                                updateTimerDisplay(mHopTimer.getBoilTime());
                             }
                         })
                 .create();
         picker.setMinValue(0);
         picker.setMaxValue(24);
-        picker.setValue((int) (mBoilTime / MIN_TO_MILLIS / 10));
+        picker.setValue((int) (mHopTimer.getBoilTime() / MIN_TO_MILLIS / 10));
         picker.setDisplayedValues(pickerValues);
         boilTimePicker.show();
     }
@@ -237,11 +200,11 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         long mins = millis / MIN_TO_MILLIS;
         long secs = (millis % MIN_TO_MILLIS) / SEC_TO_MILLIS;
         DecimalFormat f = new DecimalFormat("00");
-        mTimer.setText(f.format(mins) + ":" + f.format(secs));
+        mTimerView.setText(f.format(mins) + ":" + f.format(secs));
     }
 
     private void startTimerDisplay() {
-        long interval = mBoilStopTime - SystemClock.elapsedRealtime();
+        long interval = mHopTimer.getBoilStopTime() - SystemClock.elapsedRealtime();
 
         mCountDownTimer= new CountDownTimer(interval, SEC_TO_MILLIS) {
             @Override
@@ -251,7 +214,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
 
             @Override
             public void onFinish() {
-                mTimer.setText(("Done!"));
+                mTimerView.setText(("Done!"));
             }
         }.start();
     }
@@ -259,18 +222,21 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(BOIL_TIME_KEY, mBoilTime);
-        outState.putLong(BOIL_END_KEY, mBoilStopTime);
-        outState.putBoolean(IS_RUNNING_KEY, isRunning);
+        mHopTimer.saveToSharedPrefs();
+        outState.putParcelableArrayList(HOPS_LIST, (ArrayList) mHopsToAdd);
     }
+
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mBoilTime = savedInstanceState.getLong(BOIL_TIME_KEY, DEFAULT_BOIL_TIME * MIN_TO_MILLIS);
-        mBoilStopTime = savedInstanceState.getLong(BOIL_END_KEY, 0);
-        isRunning = savedInstanceState.getBoolean(IS_RUNNING_KEY, false);
+        mHopTimer.loadFromSavedPrefs();
+        ArrayList<Hops> hopsFromState = savedInstanceState.getParcelableArrayList(HOPS_LIST);
+        mHopsToAdd.clear();
+        mHopsToAdd.addAll(hopsFromState);
+        ((HopsListAdapter) mHopsListView.getAdapter()).notifyDataSetChanged();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -298,21 +264,18 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     @Override
     public void onAddHops(Hops hops) {
         mHopsToAdd.add(hops);
-        ((HopsListAdapter) mHopsList.getAdapter()).notifyDataSetChanged();
         closeEditFragment();
     }
 
     @Override
     public void onEditHops(Hops hops, int pos) {
         mHopsToAdd.set(pos, hops);
-        ((HopsListAdapter) mHopsList.getAdapter()).notifyDataSetChanged();
         closeEditFragment();
     }
 
     @Override
     public void onDeleteHops(Hops hops, int pos) {
         mHopsToAdd.remove(pos);
-        ((HopsListAdapter) mHopsList.getAdapter()).notifyDataSetChanged();
         closeEditFragment();
     }
 

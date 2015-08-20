@@ -202,10 +202,7 @@ public class EditHopsFragment extends Fragment {
      * activity.
      */
     public interface OnHopsEditListener {
-        /**
-         * Callback to add the hops item to the list of hops to add to the wort.
-         * @param hops
-         */
+
         void onAddHops(Hops hops);
 
         void onEditHops(Hops hops, int pos);
