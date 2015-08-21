@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +44,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     @InjectView(R.id.hops_list) ListView mHopsListView;
     @InjectView(R.id.start_timer_button) ImageView mStartButton;
     @InjectView(R.id.pause_timer_button) ImageView mPauseButton;
+    @InjectView(R.id.reset_timer_button) ImageView mResetButton;
     @InjectView(R.id.edit_time_button) ImageView mEditTimeButton;
     @InjectView(R.id.edit_fragment) FrameLayout mEditFragmentFrame;
 
@@ -115,7 +117,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
 
         updateTimerDisplay(mHopTimer.getBoilTime());
         if (mHopTimer.isRunning()) {
-            startTimerDisplay();
+            startTimer(null);
         }
     }
 
@@ -148,6 +150,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         startTimerDisplay();
         mStartButton.setVisibility(View.INVISIBLE);
         mPauseButton.setVisibility(View.VISIBLE);
+        mResetButton.setVisibility(View.INVISIBLE);
         mEditTimeButton.setVisibility(View.INVISIBLE);
     }
 
@@ -159,6 +162,16 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         mEditTimeButton.setVisibility(View.VISIBLE);
 
         mHopTimer.pause();
+    }
+
+    @OnClick(R.id.reset_timer_button)
+    public void resetTimer(View view) {
+        mResetButton.setVisibility(View.INVISIBLE);
+        mStartButton.setVisibility(View.VISIBLE);
+        mEditTimeButton.setVisibility(View.VISIBLE);
+        mPauseButton.setVisibility(View.INVISIBLE);
+        mHopsToAdd.clear();
+        ((HopsListAdapter) mHopsListView.getAdapter()).notifyDataSetChanged();
     }
 
     @OnClick(R.id.edit_time_button)
@@ -204,7 +217,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     }
 
     private void startTimerDisplay() {
-        long interval = mHopTimer.getBoilStopTime() - SystemClock.elapsedRealtime();
+        long interval = mHopTimer.getBoilStopTime() - System.currentTimeMillis();
 
         mCountDownTimer= new CountDownTimer(interval, SEC_TO_MILLIS) {
             @Override
@@ -215,12 +228,17 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
             @Override
             public void onFinish() {
                 mTimerView.setText(("Done!"));
+                mStartButton.setVisibility(View.INVISIBLE);
+                mPauseButton.setVisibility(View.INVISIBLE);
+                mResetButton.setVisibility(View.VISIBLE);
+                mHopTimer.stop();
             }
         }.start();
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        Log.d(TAG, "Saving State...");
         super.onSaveInstanceState(outState);
         mHopTimer.saveToSharedPrefs();
         outState.putParcelableArrayList(HOPS_LIST, (ArrayList) mHopsToAdd);
@@ -229,6 +247,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(TAG, "Restoring State...");
         super.onRestoreInstanceState(savedInstanceState);
         mHopTimer.loadFromSavedPrefs();
         ArrayList<Hops> hopsFromState = savedInstanceState.getParcelableArrayList(HOPS_LIST);
