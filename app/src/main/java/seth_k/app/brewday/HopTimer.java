@@ -86,20 +86,8 @@ public class HopTimer implements Parcelable {
         return mBoilStopTime;
     }
 
-    public void setBoilStopTime(long boilStopTime) {
-        mBoilStopTime = boilStopTime;
-    }
-
     public boolean isRunning() {
         return isRunning;
-    }
-
-    public AlarmManager getAlarmManager() {
-        return mAlarmManager;
-    }
-
-    public void setAlarmManager(AlarmManager alarmManager) {
-        mAlarmManager = alarmManager;
     }
 
     public void start() {
