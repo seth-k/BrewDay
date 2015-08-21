@@ -12,7 +12,7 @@ import android.util.Log;
 
 import java.util.List;
 
-public class HopTimer implements Parcelable {
+public class HopTimer {
     public static final String TAG = HopTimer.class.getSimpleName();
 
     public static final long MIN_TO_MILLIS = 60000;
@@ -41,37 +41,6 @@ public class HopTimer implements Parcelable {
         isRunning = false;
         mNumberOfAlarms = 0;
         mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-    }
-
-    public static Parcelable.Creator<HopTimer> CREATOR = new Parcelable.Creator<HopTimer>() {
-        @Override
-        public HopTimer createFromParcel(Parcel parcel) {
-            return new HopTimer(parcel);
-        }
-
-        @Override
-        public HopTimer[] newArray(int i) {
-            return new HopTimer[i];
-        }
-    };
-
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeLong(mBoilTime);
-        parcel.writeLong(mBoilStartTime);
-        parcel.writeLong(mBoilStopTime);
-        parcel.writeInt(isRunning ? 1 : 0);
-    }
-
-    public HopTimer(Parcel p) {
-        mBoilTime = p.readLong();
-        mBoilStartTime = p.readLong();
-        mBoilStopTime = p.readLong();
-        isRunning = p.readInt() != 0;
     }
 
     public long getBoilTime() {
