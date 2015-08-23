@@ -51,6 +51,22 @@ public class HopTimer {
         mBoilTime = boilTime;
     }
 
+    public long getRemainingTime() {
+        long now = System.currentTimeMillis();
+
+        if (isRunning) {
+            if (now > mBoilStopTime) { return 0; } // End time past
+            else { return mBoilStopTime - now; }   // during boil, timer running
+        } else {
+            if (mBoilStopTime == 0) {
+                return mBoilTime; // timer stopped at end
+            }
+            else {
+                return 0;
+            }
+        }
+    }
+
     public long getBoilStopTime() {
         return mBoilStopTime;
     }
@@ -82,6 +98,13 @@ public class HopTimer {
 
     public void stop() {
         isRunning = false;
+    }
+
+    public void reset() {
+        mBoilStartTime = 0;
+        mBoilStopTime = 0;
+        mBoilTime = HopTimerActivity.DEFAULT_BOIL_TIME * MIN_TO_MILLIS;
+
     }
 
     public void addAlarmNotifications() {
@@ -158,7 +181,7 @@ public class HopTimer {
         long now = System.currentTimeMillis();
         mBoilStartTime = prefs.getLong(BOIL_START_KEY, 0);
         mBoilStopTime = prefs.getLong(BOIL_END_KEY, 0);
-        if ( now - mBoilStartTime > 6 * 60 * MIN_TO_MILLIS || mBoilStopTime > now ) { // if timer is more than 6 hr old
+        if ( now - mBoilStartTime > 6 * 60 * MIN_TO_MILLIS || now > mBoilStopTime) { // if timer is more than 6 hr old
             deleteFromSavedPrefs();                            // or done assume we're starting over
             mBoilStartTime = 0;
             mBoilStopTime = 0;

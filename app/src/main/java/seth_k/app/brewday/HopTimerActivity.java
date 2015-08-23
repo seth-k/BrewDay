@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -115,7 +114,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
             mHopTimer.loadFromSavedPrefs();
         }
 
-        updateTimerDisplay(mHopTimer.getBoilTime());
+        updateTimerDisplay();
         if (mHopTimer.isRunning()) {
             startTimer(null);
         }
@@ -172,6 +171,8 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         mPauseButton.setVisibility(View.INVISIBLE);
         mHopsToAdd.clear();
         ((HopsListAdapter) mHopsListView.getAdapter()).notifyDataSetChanged();
+        mHopTimer.reset();
+        updateTimerDisplay();
     }
 
     @OnClick(R.id.edit_time_button)
@@ -191,14 +192,14 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 mHopTimer.setBoilTime(picker.getValue() * 10 * MIN_TO_MILLIS);
-                                updateTimerDisplay(mHopTimer.getBoilTime());
+                                updateTimerDisplay();
 
                             }
                         })
                 .setNegativeButton(R.string.dialog_cancel,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                updateTimerDisplay(mHopTimer.getBoilTime());
+                                updateTimerDisplay();
                             }
                         })
                 .create();
@@ -209,7 +210,8 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         boilTimePicker.show();
     }
 
-    private void updateTimerDisplay(long millis) {
+    private void updateTimerDisplay() {
+        long millis = mHopTimer.getRemainingTime();
         long mins = millis / MIN_TO_MILLIS;
         long secs = (millis % MIN_TO_MILLIS) / SEC_TO_MILLIS;
         DecimalFormat f = new DecimalFormat("00");
@@ -217,12 +219,12 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     }
 
     private void startTimerDisplay() {
-        long interval = mHopTimer.getBoilStopTime() - System.currentTimeMillis();
+        long interval = mHopTimer.getRemainingTime();
 
         mCountDownTimer= new CountDownTimer(interval, SEC_TO_MILLIS) {
             @Override
             public void onTick(long l) {
-                updateTimerDisplay(l);
+                updateTimerDisplay();
             }
 
             @Override
