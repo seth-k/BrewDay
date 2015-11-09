@@ -191,7 +191,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
                 .setPositiveButton(R.string.dialog_ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                mHopTimer.setBoilTime(picker.getValue() * 10 * MIN_TO_MILLIS);
+                                mHopTimer.setTime(picker.getValue() * 10 * MIN_TO_MILLIS);
                                 updateTimerDisplay();
 
                             }
@@ -205,7 +205,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
                 .create();
         picker.setMinValue(0);
         picker.setMaxValue(24);
-        picker.setValue((int) (mHopTimer.getBoilTime() / MIN_TO_MILLIS / 10));
+        picker.setValue((int) (mHopTimer.getTime() / MIN_TO_MILLIS / 10));
         picker.setDisplayedValues(pickerValues);
         boilTimePicker.show();
     }

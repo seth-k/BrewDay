@@ -65,6 +65,7 @@ public class EditHopsFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     public static EditHopsFragment newInstance(Hops param, int pos) {
         return newInstance(param, pos, MODE_EDIT);
     }
