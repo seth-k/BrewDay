@@ -113,14 +113,14 @@ public class HopTimer {
         long now = System.currentTimeMillis() - 1000;
         for (Hops hop : mHopsList) {
             atMillis = mStopTime - hop.getBoilTime() * MIN_TO_MILLIS;
-            if (atMillis < now ) {
-                // skip alarms that should already be past (if paused/reset)
-            } else if (atMillis == atMillisPrev) {  // if at same time as previous hop addition collapse into single alarm.
-                message += "\n" + hop.toString();
-                setAlarm(alarmId-1, atMillis, message);
-            } else {
-                message = hop.toString();
-                setAlarm(alarmId++, atMillis, message);
+            if (atMillis >= now) { // skip alarms that should already be past (if paused/reset)
+                if (atMillis == atMillisPrev) {  // if at same time as previous hop addition collapse into single alarm.
+                    message += "\n" + hop.toString();
+                    setAlarm(alarmId-1, atMillis, message);
+                } else {
+                    message = hop.toString();
+                    setAlarm(alarmId++, atMillis, message);
+                }
             }
             atMillisPrev = atMillis;
         }
@@ -130,7 +130,7 @@ public class HopTimer {
 
     private void setAlarm(int requestCode, long atMillis, String message) {
         Log.d(TAG, "Adding alarm " + requestCode + " for: " + message);
-        Intent alarmIntent = new android.content.Intent(mContext, seth_k.app.brewday.HopAlarmReceiver.class);
+        Intent alarmIntent = new Intent(mContext, HopAlarmReceiver.class);
         alarmIntent.putExtra(HOPS_TO_ADD_EXTRA, message);
         alarmIntent.putExtra(ALARM_ID_EXTRA, requestCode);
         PendingIntent pending = PendingIntent.getBroadcast(mContext, requestCode,
