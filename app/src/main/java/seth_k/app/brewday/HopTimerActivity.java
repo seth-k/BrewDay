@@ -1,7 +1,7 @@
 package seth_k.app.brewday;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
@@ -19,9 +19,7 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -47,32 +45,15 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     @Bind(R.id.edit_time_button) ImageView mEditTimeButton;
     @Bind(R.id.edit_fragment) FrameLayout mEditFragmentFrame;
 
-    List<Hops> mHopsToAdd;
+    private ArrayList<Hops> mHopsToAdd;
     private HopTimer mHopTimer;
     private CountDownTimer mCountDownTimer;
-
-    public List<Hops> getHopsToAdd() {
-        return mHopsToAdd;
-    }
-
-    public void setHopsToAdd(List<Hops> hopsToAdd) {
-        mHopsToAdd = hopsToAdd;
-    }
-
-    public HopTimer getHopTimer() {
-        return mHopTimer;
-    }
-
-    public void setHopTimer(HopTimer hopTimer) {
-        mHopTimer = hopTimer;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hop_timer);
         ButterKnife.bind(this);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         mHopsToAdd = new ArrayList<>();
         mHopTimer = new HopTimer(this, mHopsToAdd);
@@ -179,6 +160,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     public void editTimer(View view) {
         // Create pop-up dialog for selecting boil time
 
+        @SuppressLint("InflateParams")
         View npView = getLayoutInflater().inflate(R.layout.boil_time_dialog, null);
         final NumberPicker picker = (NumberPicker) npView;
         String[] pickerValues = new String[25];
@@ -214,8 +196,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         long millis = mHopTimer.getRemainingTime();
         long mins = millis / MIN_TO_MILLIS;
         long secs = (millis % MIN_TO_MILLIS) / SEC_TO_MILLIS;
-        DecimalFormat f = new DecimalFormat("00");
-        mTimerView.setText(f.format(mins) + ":" + f.format(secs));
+        mTimerView.setText(String.format(getString(R.string.timer_format), mins, secs));
     }
 
     private void startTimerDisplay() {
@@ -229,7 +210,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
 
             @Override
             public void onFinish() {
-                mTimerView.setText(("Done!"));
+                mTimerView.setText((getString(R.string.timer_done_text)));
                 mStartButton.setVisibility(View.INVISIBLE);
                 mPauseButton.setVisibility(View.INVISIBLE);
                 mResetButton.setVisibility(View.VISIBLE);
@@ -243,7 +224,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         Log.d(TAG, "Saving State...");
         super.onSaveInstanceState(outState);
         mHopTimer.saveToSharedPrefs();
-        outState.putParcelableArrayList(HOPS_LIST, (ArrayList) mHopsToAdd);
+        outState.putParcelableArrayList(HOPS_LIST, mHopsToAdd);
     }
 
 
@@ -254,6 +235,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         mHopTimer.loadFromSavedPrefs();
         ArrayList<Hops> hopsFromState = savedInstanceState.getParcelableArrayList(HOPS_LIST);
         mHopsToAdd.clear();
+        assert hopsFromState != null;
         mHopsToAdd.addAll(hopsFromState);
         ((HopsListAdapter) mHopsListView.getAdapter()).notifyDataSetChanged();
     }
