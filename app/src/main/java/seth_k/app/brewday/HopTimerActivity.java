@@ -23,8 +23,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 import butterknife.OnClick;
 
 
@@ -39,13 +39,13 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     private static final String HOPS_LIST = "HOPS_LIST";
     public static final boolean DEBUG_HOPS_LIST = true;
 
-    @InjectView(R.id.chronometer) TextView mTimerView;
-    @InjectView(R.id.hops_list) ListView mHopsListView;
-    @InjectView(R.id.start_timer_button) ImageView mStartButton;
-    @InjectView(R.id.pause_timer_button) ImageView mPauseButton;
-    @InjectView(R.id.reset_timer_button) ImageView mResetButton;
-    @InjectView(R.id.edit_time_button) ImageView mEditTimeButton;
-    @InjectView(R.id.edit_fragment) FrameLayout mEditFragmentFrame;
+    @Bind(R.id.chronometer) TextView mTimerView;
+    @Bind(R.id.hops_list) ListView mHopsListView;
+    @Bind(R.id.start_timer_button) ImageView mStartButton;
+    @Bind(R.id.pause_timer_button) ImageView mPauseButton;
+    @Bind(R.id.reset_timer_button) ImageView mResetButton;
+    @Bind(R.id.edit_time_button) ImageView mEditTimeButton;
+    @Bind(R.id.edit_fragment) FrameLayout mEditFragmentFrame;
 
     List<Hops> mHopsToAdd;
     private HopTimer mHopTimer;
@@ -71,7 +71,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hop_timer);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
         mHopsToAdd = new ArrayList<>();

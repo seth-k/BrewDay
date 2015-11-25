@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by Seth on 6/17/2015.
@@ -80,12 +80,12 @@ public class HopsListAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
-        @InjectView(R.id.hops_item_amount) TextView mAmount;
-        @InjectView(R.id.hops_item_name) TextView mName;
-        @InjectView(R.id.hops_item_duration) TextView mDuration;
+        @Bind(R.id.hops_item_amount) TextView mAmount;
+        @Bind(R.id.hops_item_name) TextView mName;
+        @Bind(R.id.hops_item_duration) TextView mDuration;
 
         public ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 }

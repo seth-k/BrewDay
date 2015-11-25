@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 
@@ -39,11 +39,11 @@ public class EditHopsFragment extends Fragment {
 
     private OnHopsEditListener mListener;
 
-    @InjectView(R.id.amount_picker) NumberPicker mAmountPicker;
-    @InjectView(R.id.duration_picker) NumberPicker mDurationPicker;
-    @InjectView(R.id.hops_picker) Spinner mHopsPicker;
-    @InjectView(R.id.cancelButton) ImageView mCancelButton;
-    @InjectView(R.id.deleteButton) ImageView mDeleteButton;
+    @Bind(R.id.amount_picker) NumberPicker mAmountPicker;
+    @Bind(R.id.duration_picker) NumberPicker mDurationPicker;
+    @Bind(R.id.hops_picker) Spinner mHopsPicker;
+    @Bind(R.id.cancelButton) ImageView mCancelButton;
+    @Bind(R.id.deleteButton) ImageView mDeleteButton;
 
     private NumberPickerInterval mAmountInterval;
     private NumberPickerInterval mDurationInteval;
@@ -89,7 +89,7 @@ public class EditHopsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.fragment_edit_hops, container, false);
-        ButterKnife.inject(this, layout);
+        ButterKnife.bind(this, layout);
 
         // if adding new item, remove delete and move cancel over
         if (mMode == MODE_ADD) {
