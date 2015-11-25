@@ -11,22 +11,21 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 
-/**
- * Created by Seth on 6/17/2015.
- */
 public class HopsListAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<Hops> mHops;
     private HopTimer mHopTimer;
+    private final String mDurationFormat;
 
     public HopsListAdapter(Context context, List<Hops> hops, HopTimer timer) {
         mContext = context;
         mHops = hops;
         mHopTimer = timer;
+        mDurationFormat = mContext.getString(R.string.hop_timer_item_duration_format);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class HopsListAdapter extends BaseAdapter {
         Hops hops = mHops.get(i);
         holder.mAmount.setText(hops.amountToString());
         holder.mName.setText(hops.getName());
-        holder.mDuration.setText(hops.getBoilTime() + " min");
+        holder.mDuration.setText(String.format(mDurationFormat, hops.getBoilTime()));
 
         return view;
     }

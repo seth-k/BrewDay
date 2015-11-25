@@ -30,4 +30,5 @@
     <string name="boil_time_edit_title">Boil Time (min):</string>
     <string name="timer_done_text">Done!</string>
     <string name="timer_format">%1$02d:%2$02d</string>
+    <string name="hop_timer_item_duration_format">%d min</string>
 </resources>

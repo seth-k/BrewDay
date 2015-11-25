@@ -205,6 +205,6 @@ public class HopTimer {
         editor.remove(BOIL_END_KEY);
         editor.remove(IS_RUNNING_KEY);
         editor.remove(NUMBER_OF_ALARMS_KEY);
-        editor.commit();
+        editor.apply();
     }
 }
