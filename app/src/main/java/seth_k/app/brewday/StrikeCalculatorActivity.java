@@ -3,10 +3,8 @@ package seth_k.app.brewday;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 import static android.widget.TextView.OnEditorActionListener;
 
@@ -25,13 +26,22 @@ public class StrikeCalculatorActivity extends Activity implements OnEditorAction
     private static DecimalFormat tempOutFormat = new DecimalFormat("##0.0");
     private static DecimalFormat tempInFormat = new DecimalFormat("##0");
     private Mash mMash = new Mash();
+    @Bind(R.id.sc_result_volume)
+    TextView mVolumeResultText;
+    @Bind(R.id.sc_result_temp)
+    TextView mTemperatureResultText;
+    private String mVolumeUnits = getString(R.string.unit_quart);
+    private String mTemperatureUnits = getString(R.string.unit_deg_f);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_strike_calcualtor);
 
+        ButterKnife.bind(this);
+
         // set listener and initial value for input fields
+        // TODO Initializing the strike calculator is ugly and brittle.
         int[] field_ids = {R.id.grain_weight, R.id.water_ratio, R.id.mash_target, R.id.grain_temp};
         double[] field_vals = {mMash.getGrainWeight(), mMash.getWaterRatio(), mMash.getStrikeTarget(), mMash.getGrainTemp()};
         for (int i = 0; i < field_ids.length; i++) {
@@ -43,8 +53,6 @@ public class StrikeCalculatorActivity extends Activity implements OnEditorAction
                 tempET.setText(tempInFormat.format(field_vals[i]));
             }
         }
-
-        updateDisplay();
     }
 
     @Override
@@ -114,11 +122,8 @@ public class StrikeCalculatorActivity extends Activity implements OnEditorAction
     private void updateDisplay() {
         double strike_volume = mMash.getStrikeVolume();
         double strike_temp = mMash.getStrikeTemp();
-        Resources res = getResources();
 
-        ((TextView) findViewById(R.id.sc_result_volume)).setText(volFormat.format(strike_volume)
-                + " " + res.getString(R.string.unit_quart));
-        ((TextView) findViewById(R.id.sc_result_temp)).setText(tempOutFormat.format(strike_temp)
-                + res.getString(R.string.unit_deg_f));
+        mVolumeResultText.setText(String.format("%s %s", volFormat.format(strike_volume), mVolumeUnits));
+        mTemperatureResultText.setText(String.format("%s%s", tempOutFormat.format(strike_temp), mTemperatureUnits));
     }
 }

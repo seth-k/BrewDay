@@ -59,7 +59,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         // In the simplified UI, fragments are not used at all and we instead
         // use the older PreferenceActivity APIs.
-
+        // TODO Fix mass deprecation in Google's Settings boilerplate
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
 
