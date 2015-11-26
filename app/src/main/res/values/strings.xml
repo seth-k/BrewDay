@@ -12,8 +12,8 @@
     <string name="strike_calc_grain_temp">Grain Temperature</string>
     <string name="strike_calc_strike_volume">Strike Water Volume:</string>
     <string name="strike_calc_strike_temp">Strike Water Temp:</string>
-    <string name="unit_quart">quarts</string>
-    <string name="unit_gal">gallons</string>
+    <string name="unit_quart">qts</string>
+    <string name="unit_gal">gals</string>
     <string name="unit_lb">lbs</string>
     <string name="unit_ounce">oz.</string>
     <string name="unit_deg_f">&#176; F</string>

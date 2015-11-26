@@ -30,8 +30,8 @@ public class StrikeCalculatorActivity extends Activity implements OnEditorAction
     TextView mVolumeResultText;
     @Bind(R.id.sc_result_temp)
     TextView mTemperatureResultText;
-    private String mVolumeUnits = getString(R.string.unit_quart);
-    private String mTemperatureUnits = getString(R.string.unit_deg_f);
+    private String mVolumeUnits;
+    private String mTemperatureUnits;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +39,8 @@ public class StrikeCalculatorActivity extends Activity implements OnEditorAction
         setContentView(R.layout.activity_strike_calcualtor);
 
         ButterKnife.bind(this);
+        mVolumeUnits = getString(R.string.unit_quart);
+        mTemperatureUnits = getString(R.string.unit_deg_f);
 
         // set listener and initial value for input fields
         // TODO Initializing the strike calculator is ugly and brittle.
@@ -72,7 +74,7 @@ public class StrikeCalculatorActivity extends Activity implements OnEditorAction
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_strike_calcualtor, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -111,7 +113,8 @@ public class StrikeCalculatorActivity extends Activity implements OnEditorAction
                         mMash.setGrainTemp(input);
                         break;
                 }
-            } catch (NumberFormatException e) { // Ignore empty fields.
+            } catch (NumberFormatException e) {
+                v.setError("Must be a number; can't be blank.");
             }
 
             updateDisplay();
