@@ -7,6 +7,7 @@
     custom:rangeStart="10.0"
     custom:rangeEnd="20.0"
     custom:rangeStep="2.0"
+    custom:formatString="%.2f"
     >
 
 </seth_k.app.brewday.ui.RangedNumberPicker>

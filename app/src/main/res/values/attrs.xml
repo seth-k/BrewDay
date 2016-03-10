@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RangedNumberPicker">
+        <attr name="rangeStart" format="float" />
+        <attr name="rangeEnd" format="float" />
+        <attr name="rangeStep" format="float" />
+        <attr name="formatString" format="string"/>
     </declare-styleable>
 </resources>
