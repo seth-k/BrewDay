@@ -50,7 +50,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         custom:rangeStart="0.0"
-        custom:rangeEnd="3.0"
+        custom:rangeEnd="5.0"
         custom:rangeStep="0.25"
         custom:formatString="%.2f"
         />
@@ -85,12 +85,16 @@
         android:layout_alignBottom="@+id/duration_picker"
         android:layout_marginBottom="80dp"/>
 
-    <NumberPicker
+    <seth_k.app.brewday.ui.RangedNumberPicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/duration_picker"
         android:layout_toRightOf="@+id/hops_picker"
         android:layout_centerVertical="true"
+        custom:rangeStart="0.0"
+        custom:rangeEnd="60.0"
+        custom:rangeStep="5.0"
+        custom:formatString="%.0f"
         />
 
 

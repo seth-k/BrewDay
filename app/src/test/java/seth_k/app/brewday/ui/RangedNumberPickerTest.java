@@ -36,7 +36,6 @@ public class RangedNumberPickerTest {
 
     @Test
     public void constructsNumberPickerFromXml() throws Exception {
-
         assertNotNull(mPicker);
     }
 
@@ -60,28 +59,27 @@ public class RangedNumberPickerTest {
         assertEquals(0, mPicker.getMinValue());
         assertEquals(5, mPicker.getMaxValue());
         assertEquals(6, mPicker.getMaxValue() - mPicker.getMinValue() + 1);
-        assertEquals(6, mPicker.getDisplayedValues().length);
     }
 
     @Test
     public void setsStartLabelToTenPointOh() throws Exception {
-        assertEquals("10.0", mPicker.getDisplayedValues()[0]);
+        assertEquals("10.0", mPicker.format(0));
     }
 
     @Test
     public void setsSecondLabelToTwelvePointOh() throws Exception {
-        assertEquals("12.0", mPicker.getDisplayedValues()[1]);
+        assertEquals("12.0", mPicker.format(1));
     }
 
     @Test
     public void setsLastLabelToTwentyPointOh() throws Exception {
-        assertEquals("20.0", mPicker.getDisplayedValues()[mPicker.getMaxValue()]);
+        assertEquals("20.0", mPicker.format(mPicker.getMaxValue()));
     }
 
     @Test
     public void changingFormatStringUsesNewFormat() throws Exception {
         mPicker.setFormatString("%2.0f");
-        assertEquals("10", mPicker.getDisplayedValues()[0]);
+        assertEquals("10", mPicker.format(0));
     }
 
     @Test
@@ -89,20 +87,19 @@ public class RangedNumberPickerTest {
         Activity activity = Robolectric.setupActivity(Activity.class);
         RangedNumberPicker picker = (RangedNumberPicker) LayoutInflater.from(activity)
                 .inflate(R.layout.test_ranged_number_picker_formated, null);
-        assertEquals("10.00", picker.getDisplayedValues()[0]);
+        assertEquals("10.00", picker.format(0));
     }
 
     @Test
     public void getValueReturnsValueScaledToRange() throws Exception {
         assertEquals(10.0, mPicker.getScaledValue(), DELTA);
-        assertEquals(10, mPicker.getValue());
     }
 
     @Test
     public void setValueWithDoubleSetsScaledValue() throws Exception {
         mPicker.setValue(12.0);
 
-        assertEquals(12, mPicker.getValue());
+        assertEquals(12.0, mPicker.getScaledValue(), DELTA);
     }
 
     @Test
@@ -110,6 +107,6 @@ public class RangedNumberPickerTest {
         // 12.0 should be the second entry, i.e., index 1
         mPicker.setValue(1);
 
-        assertEquals(12, mPicker.getValue());
+        assertEquals(12.0, mPicker.getScaledValue(), DELTA);
     }
 }

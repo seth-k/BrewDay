@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
@@ -42,12 +41,11 @@ public class EditHopsFragment extends Fragment {
     private OnHopsEditListener mListener;
 
     @Bind(R.id.amount_picker) RangedNumberPicker mAmountPicker;
-    @Bind(R.id.duration_picker) NumberPicker mDurationPicker;
+    @Bind(R.id.duration_picker) RangedNumberPicker mDurationPicker;
     @Bind(R.id.hops_picker) Spinner mHopsPicker;
     @Bind(R.id.cancelButton) ImageView mCancelButton;
     @Bind(R.id.deleteButton) ImageView mDeleteButton;
 
-    private NumberPickerInterval mAmountInterval;
     private NumberPickerInterval mDurationInteval;
 
 
@@ -101,7 +99,7 @@ public class EditHopsFragment extends Fragment {
         }
 
 //        mAmountInterval = new NumberPickerInterval(mAmountPicker, 0.0, 5.0, 0.25);
-        mDurationInteval = new NumberPickerInterval(mDurationPicker, 0.0, 60.0, 5.0);
+//        mDurationInteval = new NumberPickerInterval(mDurationPicker, 0.0, 60.0, 5.0);
 
         //Set list of hop varieties for spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -111,7 +109,7 @@ public class EditHopsFragment extends Fragment {
 
         if (mHops != null) {
             mAmountPicker.setValue(mHops.getAmount());
-            mDurationInteval.setValue(mHops.getBoilTime());
+            mDurationPicker.setValue((double)mHops.getBoilTime());
             int spinnerIndex = adapter.getPosition(mHops.getName());
             mHopsPicker.setSelection(spinnerIndex);
         }
@@ -133,7 +131,7 @@ public class EditHopsFragment extends Fragment {
     @OnClick(R.id.doneButton)
     public void editDone() {
         mHops.setAmount(mAmountPicker.getScaledValue());
-        mHops.setBoilTime((long) mDurationInteval.getValue());
+        mHops.setBoilTime((long) mDurationPicker.getScaledValue());
         mHops.setName(mHopsPicker.getSelectedItem().toString());
         if(mMode == MODE_ADD) {
             mListener.onAddHops(mHops);

@@ -3,14 +3,18 @@ package seth_k.app.brewday.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.text.InputFilter;
 import android.util.AttributeSet;
+import android.widget.EditText;
 import android.widget.NumberPicker;
+
+import java.lang.reflect.Field;
 
 import seth_k.app.brewday.R;
 
-public class RangedNumberPicker extends NumberPicker {
+public class RangedNumberPicker extends NumberPicker implements NumberPicker.Formatter {
 
-    public static final String FORMAT = "%.1f";
+    public static final String FORMAT_DEFAULT = "%.1f";
     public static final String NAMESPACE = "http://schemas.android.com/apk/res-auto";
     private double mRangeStart;
     private double mRangeEnd;
@@ -41,7 +45,6 @@ public class RangedNumberPicker extends NumberPicker {
         reformatLabels();
     }
 
-
     private void obtainAttributes(TypedArray a) {
         try {
             mRangeStart = a.getFloat(R.styleable.RangedNumberPicker_rangeStart, 0.0f);
@@ -49,7 +52,7 @@ public class RangedNumberPicker extends NumberPicker {
             mRangeStep = a.getFloat(R.styleable.RangedNumberPicker_rangeStep, 1.0f);
             mFormatString = a.getString(R.styleable.RangedNumberPicker_formatString);
             if(mFormatString == null) {
-                mFormatString = FORMAT;
+                mFormatString = FORMAT_DEFAULT;
             }
         } finally {
             a.recycle();
@@ -58,13 +61,18 @@ public class RangedNumberPicker extends NumberPicker {
 
     public void reformatLabels() {
         int rangeLength = ((Double)( (mRangeEnd - mRangeStart) / mRangeStep)).intValue() + 1;
-        String[] pickerLabels = new String[rangeLength];
-        for (int  i = 0; i < rangeLength; i++) {
-            pickerLabels[i] = format(i);
-        }
         setMinValue(0);
         setMaxValue(rangeLength-1);
-        setDisplayedValues(pickerLabels);
+        setFormatter(this);
+        // Hacky hack to make initial display correct. https://code.google.com/p/android/issues/detail?id=35482
+        try {
+            Field f = NumberPicker.class.getDeclaredField("mInputText");
+            f.setAccessible(true);
+            EditText inputText = (EditText) f.get(this);
+            inputText.setFilters(new InputFilter[0]);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void setRangeStart(double rangeStart) {
@@ -106,13 +114,8 @@ public class RangedNumberPicker extends NumberPicker {
     public double getScaledValue() {
         int value = super.getValue();
         return mRangeStart + mRangeStep * value;
-
     }
 
-    @Override
-    public int getValue() {
-        return (int) getScaledValue();
-    }
 
     public void setValue(double value) {
         Double pickerValue = (value - mRangeStart) / mRangeStep;

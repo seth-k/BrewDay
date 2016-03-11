@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<NumberPicker xmlns:android="http://schemas.android.com/apk/res/android"
+<seth_k.app.brewday.ui.RangedNumberPicker xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:custom="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-    android:id="@+id/boil_time_picker" >
+              android:id="@+id/boil_time_picker"
+              custom:rangeStart="0.0"
+              custom:rangeEnd="120.0"
+              custom:rangeStep="10.0"
+              custom:formatString="%.0f">
 
-</NumberPicker>
+</seth_k.app.brewday.ui.RangedNumberPicker>

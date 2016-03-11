@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import seth_k.app.brewday.ui.NumberPickerInterval;
+import seth_k.app.brewday.ui.RangedNumberPicker;
 
 
 public class HopTimerActivity extends Activity implements EditHopsFragment.OnHopsEditListener {
@@ -163,15 +162,14 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
 
         @SuppressLint("InflateParams")
         View npView = getLayoutInflater().inflate(R.layout.boil_time_dialog, null);
-        final NumberPicker picker = (NumberPicker) npView;
-        final NumberPickerInterval pickerInterval = new NumberPickerInterval(picker, 0.0, 120.0, 10.0);
+        final RangedNumberPicker picker = (RangedNumberPicker) npView;
         AlertDialog boilTimePicker = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.boil_time_edit_title))
                 .setView(npView)
                 .setPositiveButton(R.string.dialog_ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                mHopTimer.setTime((long)pickerInterval.getValue() * MIN_TO_MILLIS);
+                                mHopTimer.setTime((long)picker.getScaledValue() * MIN_TO_MILLIS);
                                 updateTimerDisplay();
 
                             }
