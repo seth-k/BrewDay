@@ -14,7 +14,6 @@ import android.widget.Spinner;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import seth_k.app.brewday.ui.NumberPickerInterval;
 import seth_k.app.brewday.ui.RangedNumberPicker;
 
 
@@ -45,9 +44,6 @@ public class EditHopsFragment extends Fragment {
     @Bind(R.id.hops_picker) Spinner mHopsPicker;
     @Bind(R.id.cancelButton) ImageView mCancelButton;
     @Bind(R.id.deleteButton) ImageView mDeleteButton;
-
-    private NumberPickerInterval mDurationInteval;
-
 
     /**
      * Use this factory method to create a new instance of
@@ -97,9 +93,6 @@ public class EditHopsFragment extends Fragment {
             RelativeLayout.LayoutParams  layoutParams = (RelativeLayout.LayoutParams) mCancelButton.getLayoutParams();
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         }
-
-//        mAmountInterval = new NumberPickerInterval(mAmountPicker, 0.0, 5.0, 0.25);
-//        mDurationInteval = new NumberPickerInterval(mDurationPicker, 0.0, 60.0, 5.0);
 
         //Set list of hop varieties for spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
