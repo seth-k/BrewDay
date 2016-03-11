@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import seth_k.app.brewday.ui.NumberPickerInterval;
 
 
 public class HopTimerActivity extends Activity implements EditHopsFragment.OnHopsEditListener {
@@ -163,17 +164,14 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
         @SuppressLint("InflateParams")
         View npView = getLayoutInflater().inflate(R.layout.boil_time_dialog, null);
         final NumberPicker picker = (NumberPicker) npView;
-        String[] pickerValues = new String[25];
-        for (int i = 0; i < 25; i++) {
-            pickerValues[i] = Integer.toString(i * 10);
-        }
+        final NumberPickerInterval pickerInterval = new NumberPickerInterval(picker, 0.0, 120.0, 10.0);
         AlertDialog boilTimePicker = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.boil_time_edit_title))
                 .setView(npView)
                 .setPositiveButton(R.string.dialog_ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
-                                mHopTimer.setTime(picker.getValue() * 10 * MIN_TO_MILLIS);
+                                mHopTimer.setTime((long)pickerInterval.getValue() * MIN_TO_MILLIS);
                                 updateTimerDisplay();
 
                             }
@@ -185,10 +183,7 @@ public class HopTimerActivity extends Activity implements EditHopsFragment.OnHop
                             }
                         })
                 .create();
-        picker.setMinValue(0);
-        picker.setMaxValue(24);
         picker.setValue((int) (mHopTimer.getTime() / MIN_TO_MILLIS / 10));
-        picker.setDisplayedValues(pickerValues);
         boilTimePicker.show();
     }
 

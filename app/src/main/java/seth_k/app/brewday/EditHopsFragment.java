@@ -1,8 +1,8 @@
 package seth_k.app.brewday;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +12,10 @@ import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
+import seth_k.app.brewday.ui.NumberPickerInterval;
 
 
 /**
@@ -98,11 +99,8 @@ public class EditHopsFragment extends Fragment {
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         }
 
-        mAmountInterval = new NumberPickerInterval(0.0, 5.0, 0.25);
-        mAmountInterval.applyToNumberPicker(mAmountPicker);
-        mDurationInteval = new NumberPickerInterval(0.0, 60.0, 5.0);
-        mDurationInteval.applyToNumberPicker(mDurationPicker);
-
+        mAmountInterval = new NumberPickerInterval(mAmountPicker, 0.0, 5.0, 0.25);
+        mDurationInteval = new NumberPickerInterval(mDurationPicker, 0.0, 60.0, 5.0);
 
         //Set list of hop varieties for spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -111,8 +109,8 @@ public class EditHopsFragment extends Fragment {
         mHopsPicker.setAdapter(adapter);
 
         if (mHops != null) {
-            mAmountInterval.setValue(mAmountPicker, mHops.getAmount());
-            mDurationInteval.setValue(mDurationPicker, mHops.getBoilTime());
+            mAmountInterval.setValue(mHops.getAmount());
+            mDurationInteval.setValue(mHops.getBoilTime());
             int spinnerIndex = adapter.getPosition(mHops.getName());
             mHopsPicker.setSelection(spinnerIndex);
         }
@@ -133,49 +131,13 @@ public class EditHopsFragment extends Fragment {
 
     @OnClick(R.id.doneButton)
     public void editDone() {
-        mHops.setAmount(mAmountInterval.getValue(mAmountPicker));
-        mHops.setBoilTime((long) mDurationInteval.getValue(mDurationPicker));
+        mHops.setAmount(mAmountInterval.getValue());
+        mHops.setBoilTime((long) mDurationInteval.getValue());
         mHops.setName(mHopsPicker.getSelectedItem().toString());
         if(mMode == MODE_ADD) {
             mListener.onAddHops(mHops);
         } else {
             mListener.onEditHops(mHops, mListPosition);
-        }
-    }
-
-    public class NumberPickerInterval {
-        double start;
-        double end;
-        double step;
-
-        public NumberPickerInterval(double rangeStart, double rangeEnd, double step) {
-            if (Math.signum(rangeEnd - rangeStart) != Math.signum(step)) {
-                throw new IllegalArgumentException("The step value must be in the same direction as start -> end");
-            }
-            start = rangeStart;
-            end = rangeEnd;
-            this.step = step;
-        }
-
-        public void applyToNumberPicker(NumberPicker numberPicker) {
-            int rangeLength = ((Double)( (end - start) / step)).intValue() + 1;
-            String[] pickerLabels = new String[rangeLength];
-            for (Integer i = 0; i < rangeLength; i++) {
-                pickerLabels[i] = Double.toString(start + step * i.doubleValue());
-            }
-            numberPicker.setMinValue(0);
-            numberPicker.setMaxValue(rangeLength-1);
-            numberPicker.setDisplayedValues(pickerLabels);
-        }
-
-        public double getValue(NumberPicker picker) {
-            Integer value = picker.getValue();
-            return start + step * value.doubleValue();
-        }
-
-        public void setValue(NumberPicker picker, double value) {
-            Double pickerValue = (value - start) / step;
-            picker.setValue(pickerValue.intValue());
         }
     }
 
