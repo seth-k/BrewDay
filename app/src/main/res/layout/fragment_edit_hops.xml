@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:custom="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
@@ -42,12 +43,17 @@
         android:src="@android:color/holo_blue_light"
         />
 
-    <NumberPicker
+    <seth_k.app.brewday.ui.RangedNumberPicker
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/amount_picker"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        custom:rangeStart="0.0"
+        custom:rangeEnd="3.0"
+        custom:rangeStep="0.25"
+        custom:formatString="%.2f"
+        />
 
     <TextView
         android:layout_width="wrap_content"

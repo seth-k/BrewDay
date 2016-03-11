@@ -16,6 +16,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import seth_k.app.brewday.ui.NumberPickerInterval;
+import seth_k.app.brewday.ui.RangedNumberPicker;
 
 
 /**
@@ -40,7 +41,7 @@ public class EditHopsFragment extends Fragment {
 
     private OnHopsEditListener mListener;
 
-    @Bind(R.id.amount_picker) NumberPicker mAmountPicker;
+    @Bind(R.id.amount_picker) RangedNumberPicker mAmountPicker;
     @Bind(R.id.duration_picker) NumberPicker mDurationPicker;
     @Bind(R.id.hops_picker) Spinner mHopsPicker;
     @Bind(R.id.cancelButton) ImageView mCancelButton;
@@ -99,7 +100,7 @@ public class EditHopsFragment extends Fragment {
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         }
 
-        mAmountInterval = new NumberPickerInterval(mAmountPicker, 0.0, 5.0, 0.25);
+//        mAmountInterval = new NumberPickerInterval(mAmountPicker, 0.0, 5.0, 0.25);
         mDurationInteval = new NumberPickerInterval(mDurationPicker, 0.0, 60.0, 5.0);
 
         //Set list of hop varieties for spinner
@@ -109,7 +110,7 @@ public class EditHopsFragment extends Fragment {
         mHopsPicker.setAdapter(adapter);
 
         if (mHops != null) {
-            mAmountInterval.setValue(mHops.getAmount());
+            mAmountPicker.setValue(mHops.getAmount());
             mDurationInteval.setValue(mHops.getBoilTime());
             int spinnerIndex = adapter.getPosition(mHops.getName());
             mHopsPicker.setSelection(spinnerIndex);
@@ -131,7 +132,7 @@ public class EditHopsFragment extends Fragment {
 
     @OnClick(R.id.doneButton)
     public void editDone() {
-        mHops.setAmount(mAmountInterval.getValue());
+        mHops.setAmount(mAmountPicker.getScaledValue());
         mHops.setBoilTime((long) mDurationInteval.getValue());
         mHops.setName(mHopsPicker.getSelectedItem().toString());
         if(mMode == MODE_ADD) {
