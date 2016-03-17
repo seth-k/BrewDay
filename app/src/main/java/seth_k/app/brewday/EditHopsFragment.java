@@ -6,15 +6,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import seth_k.app.brewday.ui.RangedNumberPicker;
+import seth_k.app.brewday.ui.SpinnerPicker;
 
 
 /**
@@ -41,7 +40,8 @@ public class EditHopsFragment extends Fragment {
 
     @Bind(R.id.amount_picker) RangedNumberPicker mAmountPicker;
     @Bind(R.id.duration_picker) RangedNumberPicker mDurationPicker;
-    @Bind(R.id.hops_picker) Spinner mHopsPicker;
+    @Bind(R.id.hops_picker)
+    SpinnerPicker mHopsPicker;
     @Bind(R.id.cancelButton) ImageView mCancelButton;
     @Bind(R.id.deleteButton) ImageView mDeleteButton;
 
@@ -95,16 +95,23 @@ public class EditHopsFragment extends Fragment {
         }
 
         //Set list of hop varieties for spinner
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.select_hops_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mHopsPicker.setAdapter(adapter);
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+//                R.array.select_hops_array, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        mHopsPicker.setAdapter(adapter);
+        String[] hopsVarieties = getActivity().getResources().getStringArray(R.array.select_hops_array);
+        mHopsPicker.setItems(hopsVarieties);
 
         if (mHops != null) {
             mAmountPicker.setValue(mHops.getAmount());
             mDurationPicker.setValue((double)mHops.getBoilTime());
-            int spinnerIndex = adapter.getPosition(mHops.getName());
-            mHopsPicker.setSelection(spinnerIndex);
+            int spinnerIndex = 0;
+//            spinnerIndex = adapter.getPosition(mHops.getName());
+            for(int i = 0; i < hopsVarieties.length; i++){
+                if(hopsVarieties[i].equals(mHops.getName())) spinnerIndex = i;
+
+            }
+            mHopsPicker.setValue(spinnerIndex);
         }
 
         return layout;

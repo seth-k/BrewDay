@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:custom="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
              android:background="@android:color/background_light"
              android:clickable="true"
              tools:context="seth_k.app.brewday.EditHopsFragment">
@@ -43,59 +43,70 @@
         android:src="@android:color/holo_blue_light"
         />
 
-    <seth_k.app.brewday.ui.RangedNumberPicker
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/amount_picker"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        custom:rangeStart="0.0"
-        custom:rangeEnd="5.0"
-        custom:rangeStep="0.25"
-        custom:formatString="%.2f"
-        />
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:padding="15dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unit_ounce"
-        android:layout_gravity="right"
-        android:id="@+id/amount_unit_label"
-        android:layout_alignBottom="@+id/amount_picker"
-        android:layout_toRightOf="@+id/amount_picker"
-        android:layout_toEndOf="@+id/amount_picker"
-        android:layout_marginBottom="80dp"/>
+        <seth_k.app.brewday.ui.RangedNumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/amount_picker"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            custom:rangeStart="0.0"
+            custom:rangeEnd="5.0"
+            custom:rangeStep="0.25"
+            custom:formatString="%.2f"
+            />
 
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/hops_picker"
-        android:layout_gravity="center"
-        android:layout_toRightOf="@+id/amount_unit_label"
-        android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/unit_ounce"
+            android:layout_gravity="right"
+            android:id="@+id/amount_unit_label"
+            android:layout_alignBottom="@+id/amount_picker"
+            android:layout_toRightOf="@+id/amount_picker"
+            android:layout_toEndOf="@+id/amount_picker"
+            android:layout_marginBottom="80dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/unit_min"
-        android:layout_gravity="right"
-        android:id="@+id/duration_unit_label"
-        android:layout_toRightOf="@+id/duration_picker"
-        android:layout_toEndOf="@+id/duration_picker"
-        android:layout_alignBottom="@+id/duration_picker"
-        android:layout_marginBottom="80dp"/>
+        <seth_k.app.brewday.ui.SpinnerPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hops_picker"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@+id/amount_unit_label"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"/>
 
-    <seth_k.app.brewday.ui.RangedNumberPicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/duration_picker"
-        android:layout_toRightOf="@+id/hops_picker"
-        android:layout_centerVertical="true"
-        custom:rangeStart="0.0"
-        custom:rangeEnd="60.0"
-        custom:rangeStep="5.0"
-        custom:formatString="%.0f"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/unit_min"
+            android:layout_gravity="right"
+            android:id="@+id/duration_unit_label"
+            android:layout_toRightOf="@+id/duration_picker"
+            android:layout_toEndOf="@+id/duration_picker"
+            android:layout_alignBottom="@+id/duration_picker"
+            android:layout_marginBottom="80dp"
+            />
+
+        <seth_k.app.brewday.ui.RangedNumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/duration_picker"
+            android:layout_toRightOf="@+id/hops_picker"
+            android:layout_centerVertical="true"
+            custom:rangeStart="0.0"
+            custom:rangeEnd="60.0"
+            custom:rangeStep="5.0"
+            custom:formatString="%.0f"
+            />
+    </RelativeLayout>
+
 
 
 </RelativeLayout>
